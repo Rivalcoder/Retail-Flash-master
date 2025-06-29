@@ -1,108 +1,99 @@
 "use client"
 import Link from "next/link";
-import {
-  Bot,
-  LayoutDashboard,
-  Sparkles,
-  Zap,
-  Shield,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Zap, LogOut, Crown, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sidebar,
-  SidebarProvider,
-  SidebarInset,
-  SidebarHeader,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-  SidebarSeparator,
-} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <TooltipProvider>
-    <SidebarProvider>
-      <Sidebar variant="sidebar" collapsible="icon">
-        <SidebarHeader>
-          <div
-            className={cn(
-              "flex items-center gap-2 p-2",
-              "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2"
-            )}
-          >
-            <Zap className="size-6 text-primary" />
-            <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">
-              RetailFlow AI
-            </span>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive>
-                  <Link href="/admin/dashboard">
-                    <LayoutDashboard />
-                    <span>Dashboard</span>
-                  </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-            <SidebarSeparator />
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                        <Link href="#">
-                            <Settings />
-                            <span>Settings</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                         <Link href="/">
-                            <LogOut />
-                            <span>Logout</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-          <SidebarTrigger />
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground hidden md:block">Admin Co-Pilot</p>
+  // Initialize sidebar state from localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebar-open');
+    if (savedState !== null) {
+      setSidebarOpen(savedState === 'true');
+    }
+  }, []);
+
+  const toggleSidebar = () => {
+    const newState = !sidebarOpen;
+    setSidebarOpen(newState);
+    localStorage.setItem('sidebar-open', newState.toString());
+    
+    // Dispatch custom event for the page component
+    window.dispatchEvent(new CustomEvent('toggle-sidebar'));
+  };
+
+  return (
+    <div className="flex h-screen w-full flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <header className="flex-shrink-0 border-b border-white/20 bg-white/80 backdrop-blur-xl dark:bg-slate-900/80">
+        <div className="flex h-16 items-center justify-between px-6">
+          {/* Logo Section */}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebar}
+              className="h-9 w-9 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+            
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                RetailFlow AI
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</span>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 border border-amber-200/50 dark:border-amber-700/50">
+              <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <span className="text-sm font-medium text-amber-700 dark:text-amber-300">Admin Co-Pilot</span>
+            </div>
+            
+            <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
+            
             <ThemeToggle />
-            <Avatar>
+            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-9 w-9 rounded-lg hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+              asChild
+            >
+              <Link href="/">
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Logout</span>
+              </Link>
+            </Button>
+            
+            <Avatar className="h-9 w-9 ring-2 ring-white dark:ring-slate-800 shadow-lg">
               <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="logo abstract" />
-              <AvatarFallback>AD</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                AD
+              </AvatarFallback>
             </Avatar>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="flex-1 overflow-auto p-4 sm:p-6">
-            {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-  </TooltipProvider>
-  )
+      <main className="flex-1 overflow-hidden">
+        {children}
+      </main>
+    </div>
+  );
 }

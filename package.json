@@ -45,6 +45,7 @@
     "firebase": "^11.9.1",
     "framer-motion": "^11.2.10",
     "genkit": "^1.13.0",
+    "groq-sdk": "^0.26.0",
     "lucide-react": "^0.475.0",
     "mongoose": "^8.4.1",
     "next": "15.3.3",
@@ -58,7 +59,7 @@
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

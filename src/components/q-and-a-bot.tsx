@@ -15,7 +15,7 @@ import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { Send, Loader2, Bot, User, Sparkles, MessageCircle, X } from "lucide-react";
+import { Send, Loader2, Bot, User, Sparkles, MessageCircle, Search, HelpCircle, Star, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { answerQuestion } from "@/ai/flows/customer-q-and-a-bot";
 import { useToast } from "@/hooks/use-toast";
@@ -29,16 +29,16 @@ interface Message {
   sender: "user" | "bot";
   text: string;
   timestamp: Date;
+  productId?: string;
 }
 
 export default function QAndABot({ products }: QAndABotProps) {
-  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [selectedProductId, setSelectedProductId] = useState<string>("general");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isPending, setIsPending] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -48,13 +48,13 @@ export default function QAndABot({ products }: QAndABotProps) {
       });
     }
   }, [messages]);
-  
+
   const handleSend = async () => {
-    if (!input.trim() || !selectedProductId) {
+    if (!input.trim()) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please select a product and type a question.",
+        title: "Missing Question",
+        description: "Please type a question to ask the AI assistant.",
       });
       return;
     }
@@ -62,7 +62,8 @@ export default function QAndABot({ products }: QAndABotProps) {
     const userMessage: Message = { 
       sender: "user", 
       text: input,
-      timestamp: new Date()
+      timestamp: new Date(),
+      productId: selectedProductId === "general" ? undefined : selectedProductId
     };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -70,13 +71,14 @@ export default function QAndABot({ products }: QAndABotProps) {
 
     try {
       const response = await answerQuestion({
-        productId: selectedProductId,
+        productId: selectedProductId === "general" ? "general" : selectedProductId,
         question: input,
       });
       const botMessage: Message = { 
         sender: "bot", 
         text: response.answer,
-        timestamp: new Date()
+        timestamp: new Date(),
+        productId: selectedProductId === "general" ? undefined : selectedProductId
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -84,7 +86,8 @@ export default function QAndABot({ products }: QAndABotProps) {
       const errorMessage: Message = {
         sender: "bot",
         text: "Sorry, I'm having trouble connecting to my brain right now. Please try again later.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        productId: selectedProductId === "general" ? undefined : selectedProductId
       };
       setMessages((prev) => [...prev, errorMessage]);
       toast({
@@ -97,221 +100,300 @@ export default function QAndABot({ products }: QAndABotProps) {
     }
   };
 
-  const selectedProduct = products.find(p => p.id === selectedProductId);
+  const selectedProduct = selectedProductId === "general" ? null : products.find(p => p.id === selectedProductId);
 
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-lg p-4 hover:scale-105 transition-transform focus:outline-none"
-        aria-label="Open chat bot"
-      >
-        <Bot className="h-7 w-7" />
-      </button>
-    );
-  }
+  const suggestedQuestions = [
+    "What are the key features of this product?",
+    "How does this compare to similar products?",
+    "What are the warranty terms?",
+    "Is this suitable for beginners?",
+    "What accessories are included?",
+    "How long does shipping take?",
+    "What's the return policy?",
+    "Are there any discounts available?"
+  ];
+
+  const popularProducts = products.slice(0, 4);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-[370px] max-w-[95vw] max-h-[85vh] overflow-y-auto overflow-x-hidden flex flex-col shadow-2xl">
-      <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-        <button
-          onClick={() => setOpen(false)}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-white p-2 rounded-full focus:outline-none z-10"
-          aria-label="Close chat bot"
-        >
-          <X className="h-5 w-5" />
-        </button>
-        <div className="flex-1 flex flex-col p-5 pt-10 gap-6">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center flex flex-col items-center gap-2"
-          >
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Bot className="h-8 w-8 text-purple-600" />
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">AI Shopping Assistant</h2>
-              <Sparkles className="h-6 w-6 text-blue-600 animate-pulse" />
-            </div>
-            <p className="text-muted-foreground text-sm max-w-[90%] mx-auto">Ask questions about any product and get instant AI-powered answers</p>
-          </motion.div>
-
-          {/* Product Selection */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col gap-4 items-center"
-          >
+    <div className="flex gap-6 h-full">
+      {/* Left Sidebar - Product Selection & Suggestions */}
+      <div className="w-80 space-y-6 overflow-y-auto">
+        {/* Product Selection */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              Select Product
+            </CardTitle>
+            <CardDescription>
+              Choose a product to ask questions about
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <Select onValueChange={setSelectedProductId} value={selectedProductId}>
-              <SelectTrigger className="w-full sm:w-[300px] bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300">
-                <SelectValue placeholder="Select a product to ask about..." />
+              <SelectTrigger>
+                <SelectValue placeholder="Select a product..." />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="general">General Questions</SelectItem>
                 {products.map((product) => (
                   <SelectItem key={product.id} value={product.id}>
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
                         <img 
-                          src={product.imageUrl}
+                          src={product.image || product.imageUrl}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="min-w-0">
-                        <div className="font-medium truncate max-w-[120px]">{product.name}</div>
-                        <div className="text-sm text-muted-foreground truncate">₹{Number(product.price)}</div>
+                        <div className="font-medium truncate">{product.name}</div>
+                        <div className="text-sm text-muted-foreground">₹{Number(product.price).toLocaleString()}</div>
                       </div>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
             {selectedProduct && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200 dark:border-purple-800 w-full max-w-[320px] mx-auto"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border"
               >
-                <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-white dark:border-gray-700 shadow-md flex-shrink-0">
-                  <img 
-                    src={selectedProduct.imageUrl}
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col gap-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-white truncate max-w-[140px]">{selectedProduct.name}</h3>
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400 max-w-full">
-                    <span className="truncate">₹{Number(selectedProduct.price).toLocaleString()}</span>
-                    <span>•</span>
-                    <span className="truncate">{selectedProduct.stock} in stock</span>
-                    {selectedProduct.isNew && (
-                      <>
-                        <span>•</span>
-                        <Badge className="bg-green-500 text-white text-xs">New</Badge>
-                      </>
-                    )}
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white dark:border-gray-700 shadow-sm">
+                    <img 
+                      src={selectedProduct.image || selectedProduct.imageUrl}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  {selectedProduct.description && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1 max-w-full">{selectedProduct.description}</div>
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">{selectedProduct.name}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <span>₹{Number(selectedProduct.price).toLocaleString()}</span>
+                      <span>•</span>
+                      <span>{selectedProduct.stock} in stock</span>
+                      {selectedProduct.isNew && (
+                        <>
+                          <span>•</span>
+                          <Badge className="bg-green-500 text-white text-xs">New</Badge>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
-          </motion.div>
+          </CardContent>
+        </Card>
 
-          {/* Chat Interface */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden flex flex-col"
-          >
-            <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 text-center">
-              <div className="flex items-center justify-center gap-2">
-                <MessageCircle className="h-5 w-5 text-purple-600" />
-                <h3 className="font-semibold text-gray-900 dark:text-white">Chat with AI Assistant</h3>
-              </div>
+        {/* Suggested Questions */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5" />
+              Suggested Questions
+            </CardTitle>
+            <CardDescription>
+              Click to ask common questions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {suggestedQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInput(question)}
+                  className="w-full text-left p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm"
+                >
+                  {question}
+                </button>
+              ))}
             </div>
-            <ScrollArea className="h-[340px] p-3" ref={scrollAreaRef}>
-              <div className="space-y-4 flex flex-col justify-end">
-                <AnimatePresence>
-                  {messages.length === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="text-center text-muted-foreground h-full flex flex-col items-center justify-center space-y-4"
-                    >
-                      <Bot className="h-12 w-12 text-gray-400" />
-                      <div>
-                        <p className="font-medium">No messages yet</p>
-                        <p className="text-sm">Select a product and ask a question to start chatting!</p>
-                      </div>
-                    </motion.div>
+          </CardContent>
+        </Card>
+
+        {/* Popular Products */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Popular Products
+            </CardTitle>
+            <CardDescription>
+              Most asked about products
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {popularProducts.map((product) => (
+                <button
+                  key={product.id}
+                  onClick={() => setSelectedProductId(product.id)}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left",
+                    selectedProductId === product.id
+                      ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                      : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
                   )}
+                >
+                  <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
+                    <img 
+                      src={product.image || product.imageUrl}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm truncate">{product.name}</div>
+                    <div className="text-xs text-muted-foreground">₹{Number(product.price).toLocaleString()}</div>
+                  </div>
+                  {product.isNew && (
+                    <Badge className="bg-green-500 text-white text-xs">New</Badge>
+                  )}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <Card className="flex-1 flex flex-col min-h-0">
+          <CardHeader className="flex-shrink-0">
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-6 w-6 text-purple-600" />
+              AI Shopping Assistant
+              <Sparkles className="h-5 w-5 text-blue-600 animate-pulse" />
+            </CardTitle>
+            <CardDescription>
+              Ask questions about products and get instant AI-powered answers
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+            {/* Messages Area */}
+            <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+              <div className="space-y-4">
+                {messages.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center py-12"
+                  >
+                    <Bot className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Welcome to AI Shopping Assistant
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                      Select a product and ask any questions. I'll help you make informed purchasing decisions!
+                    </p>
+                  </motion.div>
+                )}
+
+                <AnimatePresence>
                   {messages.map((message, index) => (
                     <motion.div
                       key={index}
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      className={cn(
-                        "flex items-end gap-2 w-full",
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className={`flex gap-3 ${
                         message.sender === "user" ? "justify-end" : "justify-start"
-                      )}
+                      }`}
                     >
                       {message.sender === "bot" && (
-                        <Avatar className="h-8 w-8 bg-gradient-to-br from-purple-500 to-blue-500">
-                          <Bot className="h-4 w-4 text-white" />
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
+                            AI
+                          </AvatarFallback>
                         </Avatar>
                       )}
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.2 }}
+                      
+                      <div
                         className={cn(
-                          "max-w-[75%] rounded-2xl p-3 text-sm shadow-sm break-words",
+                          "max-w-[70%] rounded-lg p-3",
                           message.sender === "user"
-                            ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white text-right"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white text-left"
+                            ? "bg-blue-500 text-white"
+                            : "bg-slate-100 dark:bg-slate-800 border"
                         )}
                       >
-                        <p className="leading-relaxed whitespace-pre-line">{message.text}</p>
-                        <p className={cn(
-                          "text-xs mt-2 opacity-70",
-                          message.sender === "user" ? "text-purple-100" : "text-gray-500"
+                        <div className="whitespace-pre-wrap text-sm">
+                          {message.text}
+                        </div>
+                        <div className={cn(
+                          "text-xs mt-2",
+                          message.sender === "user" ? "text-blue-100" : "text-slate-500 dark:text-slate-400"
                         )}>
                           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </motion.div>
+                        </div>
+                      </div>
+
                       {message.sender === "user" && (
-                        <Avatar className="h-8 w-8 bg-gradient-to-br from-gray-500 to-gray-600">
-                          <User className="h-4 w-4 text-white" />
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="bg-slate-500 text-white text-xs">
+                            U
+                          </AvatarFallback>
                         </Avatar>
                       )}
                     </motion.div>
                   ))}
-                  {isPending && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-end gap-2 w-full justify-start"
-                    >
-                      <Avatar className="h-8 w-8 bg-gradient-to-br from-purple-500 to-blue-500">
-                        <Bot className="h-4 w-4 text-white" />
-                      </Avatar>
-                      <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl p-3 flex items-center space-x-2">
-                        <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">AI is thinking...</span>
-                      </div>
-                    </motion.div>
-                  )}
                 </AnimatePresence>
+
+                {isPending && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex gap-3 justify-start"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
+                        AI
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="bg-slate-100 dark:bg-slate-800 border rounded-lg p-3">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </ScrollArea>
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && !isPending && handleSend()}
-                placeholder="Ask a question about the selected product..."
-                disabled={isPending || !selectedProductId}
-                className="flex-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 focus:border-purple-500 dark:focus:border-purple-400 transition-all duration-300 rounded-full px-4 py-2"
-              />
-              <Button 
-                onClick={handleSend} 
-                disabled={isPending || !selectedProductId}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 rounded-full px-4 py-2"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+
+            {/* Input Area */}
+            <div className="border-t p-4 flex-shrink-0">
+              <div className="flex gap-3">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Ask a question about the product..."
+                  className="flex-1"
+                  disabled={isPending}
+                />
+                <Button
+                  onClick={handleSend}
+                  disabled={!input.trim() || isPending}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-          </motion.div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

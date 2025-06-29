@@ -3,8 +3,6 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
-import QAndABot from '@/components/q-and-a-bot';
-import { sampleProducts } from '@/lib/mock-data';
 
 export const metadata: Metadata = {
   title: 'RetailFlow AI',
@@ -32,7 +30,6 @@ export default function RootLayout({
         >
             {children}
             <Toaster />
-            <QAndABot products={sampleProducts} />
         </ThemeProvider>
       </body>
     </html>
