@@ -113,3 +113,24 @@ export const initialProducts: Product[] = [
     tagline: "Pack Your Adventures"
   }
 ];
+
+export const sampleProducts = [
+  {
+    id: "sample_001",
+    name: "T-Shirt",
+    price: 19.99,
+    description: "Comfortable cotton t-shirt",
+    category: "Apparel",
+    stock: 100,
+    imageUrl: "https://example.com/tshirt.jpg"
+  },
+  {
+    id: "sample_002",
+    name: "Sneakers",
+    price: 49.99,
+    description: "Running sneakers",
+    category: "Footwear",
+    stock: 50,
+    imageUrl: "https://example.com/sneakers.jpg"
+  }
+];

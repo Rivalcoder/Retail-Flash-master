@@ -17,6 +17,7 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -102,6 +103,7 @@ export default function AdminDashboardPage() {
   };
   
   return (
+    <div className="relative flex-1">
       <Tabs defaultValue="dashboard" className="flex-1">
         <TabsList className="grid w-full grid-cols-1 sm:w-auto sm:grid-cols-4">
           <TabsTrigger value="dashboard">
@@ -136,5 +138,14 @@ export default function AdminDashboardPage() {
           </div>
         </TabsContent>
       </Tabs>
+      {/* Floating Chatbot Button for Admin */}
+      <Link
+        href="/admin/dashboard/chatbot"
+        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-lg p-4 hover:scale-105 transition-transform focus:outline-none"
+        aria-label="Open chat bot"
+      >
+        <Bot className="h-7 w-7" />
+      </Link>
+    </div>
   );
 }
