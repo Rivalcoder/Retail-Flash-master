@@ -41,6 +41,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -462,7 +463,7 @@ export default function InventoryPage() {
         </CardContent>
       </Card>
 
-      {/* Products Grid */}
+      {/* Products List */}
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -485,115 +486,118 @@ export default function InventoryPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => {
-            const stockStatus = getStockStatus(product.stock);
-            return (
-              <Card key={product._id} className="group hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg font-semibold truncate">
-                        {product.name}
-                      </CardTitle>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                        {product.category}
-                      </p>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleEditProduct(product)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit Product
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteProduct(product)}
-                          className="text-red-600 focus:text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete Product
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {/* Product Image */}
-                  <div className="relative aspect-square mb-4 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800">
-                    {product.imageUrl ? (
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e2e8f0'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%2394a3b8' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400">
-                        <Package className="h-8 w-8" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Details */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                        ${product.price.toFixed(2)}
-                      </span>
-                      <Badge variant={stockStatus.color as any}>
-                        {stockStatus.text}
-                      </Badge>
-                    </div>
-
-                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                      {product.description}
-                    </p>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500 dark:text-slate-400">
-                        Stock: {product.stock}
-                      </span>
-                      <span className="text-slate-500 dark:text-slate-400">
-                        ID: {product._id}
-                      </span>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditProduct(product)}
-                        className="flex-1"
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteProduct(product)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <Card>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Product</th>
+                    <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Category</th>
+                    <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Price</th>
+                    <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Stock</th>
+                    <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Status</th>
+                    <th className="text-right p-4 font-semibold text-slate-900 dark:text-white">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => {
+                    const stockStatus = getStockStatus(product.stock);
+                    return (
+                      <tr key={product._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center space-x-3">
+                            <HoverCard>
+                              <HoverCardTrigger asChild>
+                                <Button variant="link" className="p-0 h-auto font-medium text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400">
+                                  {product.name}
+                                </Button>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80">
+                                <div className="flex justify-between space-x-4">
+                                  <div className="space-y-1">
+                                    <h4 className="text-sm font-semibold">{product.name}</h4>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                      {product.description}
+                                    </p>
+                                    <div className="flex items-center pt-2">
+                                      <span className="text-sm text-slate-500 dark:text-slate-400">
+                                        ${product.price.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+                                    {product.imageUrl ? (
+                                      <img
+                                        src={product.imageUrl}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                          const target = e.target as HTMLImageElement;
+                                          target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e2e8f0'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%2394a3b8' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+                                        }}
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                        <Package className="h-6 w-6" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {product.category}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-lg font-semibold text-slate-900 dark:text-white">
+                            ${product.price.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {product.stock}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <Badge variant={stockStatus.color as any}>
+                            {stockStatus.text}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center justify-end space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditProduct(product)}
+                              className="h-8 px-3"
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteProduct(product)}
+                              className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Edit Product Dialog */}

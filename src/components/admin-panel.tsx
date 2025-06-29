@@ -168,12 +168,26 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-          <TabsTrigger value="upload" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto bg-slate-200 dark:bg-slate-700 p-1 rounded-lg border border-slate-300 dark:border-slate-600">
+          <TabsTrigger 
+            value="upload" 
+            className="flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold"
+            style={{
+              backgroundColor: activeTab === 'upload' ? '#2563eb' : 'transparent',
+              color: activeTab === 'upload' ? 'white' : '#374151'
+            }}
+          >
             <UploadCloud className="h-4 w-4" />
             File Upload
           </TabsTrigger>
-          <TabsTrigger value="manual" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="manual" 
+            className="flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold"
+            style={{
+              backgroundColor: activeTab === 'manual' ? '#2563eb' : 'transparent',
+              color: activeTab === 'manual' ? 'white' : '#374151'
+            }}
+          >
             <PenTool className="h-4 w-4" />
             Manual Entry
           </TabsTrigger>

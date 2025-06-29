@@ -220,7 +220,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
   };
 
   // --- Offer/Deal Carousel Data ---
-  const offerProducts = notifications.filter(n => n.type === 'flash-sale' || n.type === 'price-drop').map(n => products.find(p => p._id === n.productId)).filter(Boolean);
+  const offerProducts = notifications.filter(n => n.type === 'flash-sale' || n.type === 'price-drop').map(n => products.find(p => (p._id || p.id) === n.productId)).filter(Boolean);
 
   return (
     <div className="space-y-8">
@@ -279,7 +279,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
         >
           {filteredProducts.map((product, index) => (
             <motion.div
-              key={product._id}
+              key={product._id || product.id || index}
               variants={itemVariants}
             className="relative group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col"
           >
@@ -289,11 +289,11 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
             )}
             {/* Wishlist Icon */}
             <button
-                        onClick={() => toggleFavorite(product._id)}
+                        onClick={() => toggleFavorite(product._id || product.id)}
               className="absolute top-4 right-4 z-10 bg-white/80 dark:bg-gray-800/80 rounded-full p-2 shadow hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors"
-              title={favorites.has(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
+              title={favorites.has(product._id || product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
             >
-              <Heart className={cn("h-5 w-5 transition-colors", favorites.has(product._id) ? "fill-red-500 text-red-500" : "text-gray-400")}/>
+              <Heart className={cn("h-5 w-5 transition-colors", favorites.has(product._id || product.id) ? "fill-red-500 text-red-500" : "text-gray-400")}/>
             </button>
             {/* Product Image */}
             <div className="relative w-full h-48 flex-shrink-0 rounded-t-2xl overflow-hidden">

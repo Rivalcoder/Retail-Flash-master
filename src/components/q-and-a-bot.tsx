@@ -117,6 +117,141 @@ export default function QAndABot({ products }: QAndABotProps) {
 
   return (
     <div className="flex gap-6 h-full">
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <Card className="flex-1 flex flex-col min-h-0">
+          <CardHeader className="flex-shrink-0">
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-6 w-6 text-purple-600" />
+              AI Shopping Assistant
+              <Sparkles className="h-5 w-5 text-blue-600 animate-pulse" />
+            </CardTitle>
+            <CardDescription>
+              Ask questions about products and get instant AI-powered answers
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+            {/* Messages Area */}
+            <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+              <div className="space-y-4">
+                  {messages.length === 0 && (
+                    <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center py-12"
+                    >
+                    <Bot className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Welcome to AI Shopping Assistant
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                      Select a product and ask any questions. I'll help you make informed purchasing decisions!
+                    </p>
+                    </motion.div>
+                  )}
+
+                <AnimatePresence>
+                  {messages.map((message, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className={`flex gap-3 ${
+                        message.sender === "user" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      {message.sender === "bot" && (
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
+                            AI
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      
+                      <div
+                        className={cn(
+                          "max-w-[70%] rounded-lg p-3",
+                          message.sender === "user"
+                            ? "bg-blue-500 text-white"
+                            : "bg-slate-100 dark:bg-slate-800 border"
+                        )}
+                      >
+                        <div className="whitespace-pre-wrap text-sm">
+                          {message.text}
+                        </div>
+                        <div className={cn(
+                          "text-xs mt-2",
+                          message.sender === "user" ? "text-blue-100" : "text-slate-500 dark:text-slate-400"
+                        )}>
+                          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+
+                      {message.sender === "user" && (
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="bg-slate-500 text-white text-xs">
+                            U
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                  {isPending && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    className="flex gap-3 justify-start"
+                    >
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
+                        AI
+                      </AvatarFallback>
+                      </Avatar>
+                    <div className="bg-slate-100 dark:bg-slate-800 border rounded-lg p-3">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                      </div>
+                    </motion.div>
+                  )}
+              </div>
+            </ScrollArea>
+
+            {/* Input Area */}
+            <div className="border-t p-4 flex-shrink-0">
+              <div className="flex gap-3">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Ask a question about the product..."
+                  className="flex-1"
+                  disabled={isPending}
+              />
+              <Button 
+                onClick={handleSend} 
+                  disabled={!input.trim() || isPending}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                <Send className="h-4 w-4" />
+                  )}
+              </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
       {/* Left Sidebar - Product Selection & Suggestions */}
       <div className="w-80 space-y-6 overflow-y-auto">
           {/* Product Selection */}
@@ -270,139 +405,7 @@ export default function QAndABot({ products }: QAndABotProps) {
         </Card>
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <Card className="flex-1 flex flex-col min-h-0">
-          <CardHeader className="flex-shrink-0">
-            <CardTitle className="flex items-center gap-2">
-              <Bot className="h-6 w-6 text-purple-600" />
-              AI Shopping Assistant
-              <Sparkles className="h-5 w-5 text-blue-600 animate-pulse" />
-            </CardTitle>
-            <CardDescription>
-              Ask questions about products and get instant AI-powered answers
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="flex-1 flex flex-col p-0 min-h-0">
-            {/* Messages Area */}
-            <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
-              <div className="space-y-4">
-                  {messages.length === 0 && (
-                    <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center py-12"
-                    >
-                    <Bot className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      Welcome to AI Shopping Assistant
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                      Select a product and ask any questions. I'll help you make informed purchasing decisions!
-                    </p>
-                    </motion.div>
-                  )}
-
-                <AnimatePresence>
-                  {messages.map((message, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`flex gap-3 ${
-                        message.sender === "user" ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      {message.sender === "bot" && (
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
-                            AI
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      
-                      <div
-                        className={cn(
-                          "max-w-[70%] rounded-lg p-3",
-                          message.sender === "user"
-                            ? "bg-blue-500 text-white"
-                            : "bg-slate-100 dark:bg-slate-800 border"
-                        )}
-                      >
-                        <div className="whitespace-pre-wrap text-sm">
-                          {message.text}
-                        </div>
-                        <div className={cn(
-                          "text-xs mt-2",
-                          message.sender === "user" ? "text-blue-100" : "text-slate-500 dark:text-slate-400"
-                        )}>
-                          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                      </div>
-
-                      {message.sender === "user" && (
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-slate-500 text-white text-xs">
-                            U
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-
-                  {isPending && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-3 justify-start"
-                    >
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
-                        AI
-                      </AvatarFallback>
-                      </Avatar>
-                    <div className="bg-slate-100 dark:bg-slate-800 border rounded-lg p-3">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                      </div>
-                    </motion.div>
-                  )}
-              </div>
-            </ScrollArea>
-
-            {/* Input Area */}
-            <div className="border-t p-4 flex-shrink-0">
-              <div className="flex gap-3">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Ask a question about the product..."
-                  className="flex-1"
-                  disabled={isPending}
-              />
-              <Button 
-                onClick={handleSend} 
-                  disabled={!input.trim() || isPending}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              >
-                  {isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                <Send className="h-4 w-4" />
-                  )}
-              </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      
     </div>
   );
 }
