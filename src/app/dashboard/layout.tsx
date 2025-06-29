@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold md:text-base">
             <Zap className="h-6 w-6 text-primary" />
-            <span className="">RetailFlow AI</span>
+            <span className="">Retail Flow AI</span>
           </Link>
           <Link href="/dashboard" className="text-foreground font-bold transition-colors hover:text-foreground/80">
             Dashboard
