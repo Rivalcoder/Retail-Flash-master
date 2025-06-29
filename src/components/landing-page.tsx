@@ -57,7 +57,7 @@ export default function LandingPage() {
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
              <Button variant="ghost" asChild>
-                <Link href="/admin/login">Admin Login</Link>
+                <Link href="/login">Customer Login</Link>
             </Button>
             <ThemeToggle />
           </div>
@@ -105,7 +105,7 @@ export default function LandingPage() {
                 </motion.p>
                 <motion.div variants={FADE_UP_ANIMATION_VARIANTS}>
                     <Button asChild size="lg">
-                        <Link href="/login">Customer Login &rarr;</Link>
+                        <Link href="/admin/login">Admin Login &rarr;</Link>
                     </Button>
                 </motion.div>
             </motion.div>

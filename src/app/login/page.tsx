@@ -91,15 +91,6 @@ export default function CustomerLoginPage() {
                   Continue with Google
                 </Button>
               </motion.div>
-              <motion.div variants={FADE_UP_ANIMATION_VARIANTS}>
-                <Button 
-                  variant="outline" 
-                  className="w-full bg-gray-800/50 hover:bg-gray-800/70 backdrop-blur-sm border-white/20 text-white hover:text-white transition-all duration-300 hover:scale-105"
-                >
-                  <Github className="w-5 h-5 mr-2" />
-                  Continue with GitHub
-                </Button>
-              </motion.div>
             </div>
 
             {/* Divider */}
