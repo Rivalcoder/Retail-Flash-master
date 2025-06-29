@@ -4,13 +4,15 @@ import { useState, useEffect } from "react";
 import Dashboard from "@/components/dashboard";
 import { initialProducts } from "@/lib/mock-data";
 import type { Product } from "@/lib/types";
+import { getCustomerData, isCustomerLoggedIn, logoutCustomer } from "@/lib/auth-utils";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ShoppingCart, User, Home, Tag, Gift, Heart, Star, ChevronRight } from "lucide-react";
+import { ShoppingCart, User, Home, Tag, Gift, Heart, Star, ChevronRight, LogOut } from "lucide-react";
 import CartDrawer from '@/components/CartDrawer';
 import WishlistDrawer from '@/components/WishlistDrawer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { useRouter } from "next/navigation";
 
 const demoCategories = [
   { name: 'Electronics', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80' },
@@ -28,6 +30,19 @@ export default function CustomerDashboardPage() {
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [customerData, setCustomerData] = useState<any>(null);
+  const router = useRouter();
+
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!isCustomerLoggedIn()) {
+      router.push('/login');
+      return;
+    }
+
+    const customer = getCustomerData();
+    setCustomerData(customer);
+  }, [router]);
 
   // Sync cart/wishlist counts from localStorage
   useEffect(() => {
@@ -42,8 +57,74 @@ export default function CustomerDashboardPage() {
     return () => window.removeEventListener('storage', syncCounts);
   }, []);
 
+  const handleLogout = () => {
+    logoutCustomer();
+    router.push('/login');
+  };
+
+  if (!customerData) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex flex-col">
+      {/* Header with Customer Info */}
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
+                <Gift className="h-6 w-6" /> Retail Flash
+              </div>
+              
+              {/* Customer Info */}
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  {customerData.firstName} {customerData.lastName}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setCartOpen(true)}
+                className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+              
+              <button
+                onClick={() => setWishlistOpen(true)}
+                className="relative p-2 text-gray-600 hover:text-red-600 transition-colors"
+              >
+                <Heart className="h-5 w-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+              
+              <ThemeToggle />
+              
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="text-sm font-medium">Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Carousel */}
       <section className="w-full relative">
         <Swiper slidesPerView={1} loop autoplay className="h-72 md:h-96">
@@ -89,7 +170,7 @@ export default function CustomerDashboardPage() {
         <h2 className="text-2xl font-bold mb-6 text-pink-700">Top Deals & Flash Sales</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.slice(0, 4).map((product, i) => (
-            <div key={product.id} className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all border border-gray-100 dark:border-gray-800 flex flex-col">
+            <div key={product._id} className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all border border-gray-100 dark:border-gray-800 flex flex-col">
               <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow z-10">{Math.round(Math.random()*50+10)}% OFF</span>
               <img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-t-2xl" />
               <div className="flex-1 flex flex-col p-5 gap-2">

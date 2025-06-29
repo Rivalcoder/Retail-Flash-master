@@ -41,13 +41,46 @@ export default function CustomerLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔐 Customer login form submitted');
+    console.log('📝 Form data:', { email: formData.email, password: '***' });
+    
     setIsLoading(true);
     
-    // Simulate API call and redirect to customer dashboard
-    setTimeout(() => {
+    try {
+      console.log('🌐 Making API call to /api/auth/customer/login');
+      const response = await fetch('/api/auth/customer/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('📡 Response status:', response.status);
+      const data = await response.json();
+      console.log('📡 Response data:', data);
+
+      if (response.ok) {
+        // Store customer data in localStorage
+        localStorage.setItem('customerData', JSON.stringify(data.customer));
+        localStorage.setItem('customerToken', data.token);
+        
+        console.log('✅ Customer login successful:', data.customer.email);
+        
+        // Redirect to customer dashboard
+        router.push('/dashboard');
+      } else {
+        // Handle error
+        console.error('❌ Login failed:', data.error);
+        // You can add toast notification here
+        alert(data.error || 'Login failed');
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      alert('Network error. Please try again.');
+    } finally {
       setIsLoading(false);
-      router.push('/dashboard');
-    }, 2000);
+    }
   };
 
   const FADE_UP_ANIMATION_VARIANTS = {

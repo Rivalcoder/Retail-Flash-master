@@ -100,7 +100,7 @@ export default function QAndABot({ products }: QAndABotProps) {
     }
   };
 
-  const selectedProduct = selectedProductId === "general" ? null : products.find(p => p.id === selectedProductId);
+  const selectedProduct = selectedProductId === "general" ? null : products.find(p => p._id === selectedProductId);
 
   const suggestedQuestions = [
     "What are the key features of this product?",
@@ -138,7 +138,15 @@ export default function QAndABot({ products }: QAndABotProps) {
               <SelectContent>
                 <SelectItem value="general">General Questions</SelectItem>
                 {products.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
+                  <div
+                    key={product._id}
+                    onClick={() => setSelectedProductId(product._id)}
+                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                      selectedProductId === product._id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    }`}
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
                         <img 
@@ -152,7 +160,7 @@ export default function QAndABot({ products }: QAndABotProps) {
                         <div className="text-sm text-muted-foreground">₹{Number(product.price).toLocaleString()}</div>
                       </div>
                     </div>
-                  </SelectItem>
+                  </div>
                 ))}
               </SelectContent>
             </Select>
@@ -232,11 +240,11 @@ export default function QAndABot({ products }: QAndABotProps) {
             <div className="space-y-3">
               {popularProducts.map((product) => (
                 <button
-                  key={product.id}
-                  onClick={() => setSelectedProductId(product.id)}
+                  key={product._id}
+                  onClick={() => setSelectedProductId(product._id)}
                   className={cn(
                     "w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left",
-                    selectedProductId === product.id
+                    selectedProductId === product._id
                       ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
                       : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
                   )}

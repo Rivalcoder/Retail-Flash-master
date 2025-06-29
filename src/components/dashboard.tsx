@@ -69,9 +69,9 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
       // New product notifications
       if (product.isNew) {
         newNotifications.push({
-          id: `new-${product.id}`,
+          id: `new-${product._id}`,
           type: 'new-product',
-          productId: product.id,
+          productId: product._id,
           message: `New Arrival: ${product.name}`,
           icon: Zap,
           color: 'text-green-600',
@@ -84,9 +84,9 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
       if (product.oldPrice && product.price < product.oldPrice) {
         const discount = Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
         newNotifications.push({
-          id: `price-${product.id}`,
+          id: `price-${product._id}`,
           type: 'price-drop',
-          productId: product.id,
+          productId: product._id,
           message: `${discount}% OFF - ${product.name}`,
           icon: TrendingDown,
           color: 'text-red-600',
@@ -98,9 +98,9 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
       // Low stock notifications
       if (product.stock <= 10 && product.stock > 0) {
         newNotifications.push({
-          id: `stock-${product.id}`,
+          id: `stock-${product._id}`,
           type: 'stock-update',
-          productId: product.id,
+          productId: product._id,
           message: `Only ${product.stock} left - ${product.name}`,
           icon: AlertTriangle,
           color: 'text-orange-600',
@@ -112,9 +112,9 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
       // Hot deals for products with high stock and good prices
       if (product.stock > 50 && product.price < 2000) {
         newNotifications.push({
-          id: `hot-${product.id}`,
+          id: `hot-${product._id}`,
           type: 'hot-deal',
-          productId: product.id,
+          productId: product._id,
           message: `Hot Deal: ${product.name}`,
           icon: Flame,
           color: 'text-purple-600',
@@ -128,9 +128,9 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
     const flashSaleProducts = products.filter(p => p.oldPrice && p.price < p.oldPrice).slice(0, 2);
     flashSaleProducts.forEach(product => {
       newNotifications.push({
-        id: `flash-${product.id}`,
+        id: `flash-${product._id}`,
         type: 'flash-sale',
-        productId: product.id,
+        productId: product._id,
         message: `⚡ Flash Sale: ${product.name}`,
         icon: Clock,
         color: 'text-yellow-600',
@@ -220,7 +220,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
   };
 
   // --- Offer/Deal Carousel Data ---
-  const offerProducts = notifications.filter(n => n.type === 'flash-sale' || n.type === 'price-drop').map(n => products.find(p => p.id === n.productId)).filter(Boolean);
+  const offerProducts = notifications.filter(n => n.type === 'flash-sale' || n.type === 'price-drop').map(n => products.find(p => p._id === n.productId)).filter(Boolean);
 
   return (
     <div className="space-y-8">
@@ -230,14 +230,14 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
           <h2 className="text-2xl font-bold mb-4 text-left text-blue-700">Hot Deals & Offers</h2>
           <Swiper slidesPerView={1.2} spaceBetween={16} breakpoints={{ 640: { slidesPerView: 2.2 }, 1024: { slidesPerView: 3.2 } }}>
             {offerProducts.map((product: Product, idx: number) => (
-              <SwiperSlide key={product.id + '-' + idx}>
+              <SwiperSlide key={product._id + '-' + idx}>
                 <div className="relative bg-gradient-to-br from-yellow-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-4 flex flex-col items-center group h-full">
                   <div className="relative w-40 h-40 mb-4">
-                    <Image src={product.image} alt={product.name} fill className="object-cover rounded-xl group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={product.imageUrl || '/placeholder-product.jpg'} alt={product.name} fill className="object-cover rounded-xl group-hover:scale-105 transition-transform duration-300" />
                     {product.oldPrice && product.price < product.oldPrice && (
                       <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF</span>
                     )}
-          </div>
+                  </div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white mb-1">{product.name}</div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl font-bold text-blue-700">₹{product.price.toLocaleString()}</span>
@@ -279,7 +279,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
         >
           {filteredProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={product._id}
               variants={itemVariants}
             className="relative group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col"
           >
@@ -289,16 +289,21 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
             )}
             {/* Wishlist Icon */}
             <button
-                        onClick={() => toggleFavorite(product.id)}
+                        onClick={() => toggleFavorite(product._id)}
               className="absolute top-4 right-4 z-10 bg-white/80 dark:bg-gray-800/80 rounded-full p-2 shadow hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors"
-              title={favorites.has(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+              title={favorites.has(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
             >
-              <Heart className={cn("h-5 w-5 transition-colors", favorites.has(product.id) ? "fill-red-500 text-red-500" : "text-gray-400")}/>
+              <Heart className={cn("h-5 w-5 transition-colors", favorites.has(product._id) ? "fill-red-500 text-red-500" : "text-gray-400")}/>
             </button>
             {/* Product Image */}
             <div className="relative w-full h-48 flex-shrink-0 rounded-t-2xl overflow-hidden">
-              <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
-                    </div>
+              <Image 
+                src={product.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzE3NSAxNTAgMTU1IDE3MCAxNTUgMTk1QzE1NSAyMjAgMTc1IDI0MCAyMDAgMjQwQzIyNSAyNDAgMjQ1IDIyMCAyNDUgMTk1QzI0NSAxNzAgMjI1IDE1MCAyMDAgMTUwWiIgZmlsbD0iI0QxRDVEM0EiLz4KPHBhdGggZD0iTTEwMCAzMDBMMTgwIDIyMEwyNjAgMzAwIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K'} 
+                alt={product.name} 
+                fill 
+                className="object-cover group-hover:scale-105 transition-transform duration-300" 
+              />
+            </div>
             {/* Product Info */}
             <div className="flex-1 flex flex-col p-5 gap-2">
                     <div className="flex items-center justify-between">

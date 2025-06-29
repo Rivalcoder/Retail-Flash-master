@@ -22,11 +22,11 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
   };
 
   const removeItem = (id: string) => {
-    updateCart(cart.filter(item => item.product.id !== id));
+    updateCart(cart.filter(item => item.product._id !== id));
   };
 
   const changeQty = (id: string, qty: number) => {
-    updateCart(cart.map(item => item.product.id === id ? { ...item, quantity: qty } : item));
+    updateCart(cart.map(item => item.product._id === id ? { ...item, quantity: qty } : item));
   };
 
   const total = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
@@ -39,18 +39,18 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
       </div>
       <div className="p-4 flex-1 overflow-y-auto space-y-4">
         {cart.length === 0 ? <p className="text-center text-gray-500">Your cart is empty.</p> : cart.map(item => (
-          <div key={item.product.id} className="flex gap-3 items-center border-b pb-2">
-            <img src={item.product.image} alt={item.product.name} className="w-14 h-14 rounded object-cover" />
+          <div key={item.product._id} className="flex gap-3 items-center border-b pb-2">
+            <img src={item.product.image || item.product.imageUrl} alt={item.product.name} className="w-12 h-12 rounded object-cover" />
             <div className="flex-1">
-              <div className="font-semibold">{item.product.name}</div>
-              <div className="text-sm text-gray-500">₹{item.product.price.toLocaleString()}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <Button size="sm" variant="outline" onClick={() => changeQty(item.product.id, Math.max(1, item.quantity - 1))}>-</Button>
-                <span>{item.quantity}</span>
-                <Button size="sm" variant="outline" onClick={() => changeQty(item.product.id, item.quantity + 1)}>+</Button>
-              </div>
+              <div className="font-medium">{item.product.name}</div>
+              <div className="text-sm text-muted-foreground">₹{item.product.price}</div>
             </div>
-            <Button size="icon" variant="ghost" onClick={() => removeItem(item.product.id)}><X className="h-4 w-4" /></Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => changeQty(item.product._id, Math.max(1, item.quantity - 1))}>-</Button>
+              <span className="w-8 text-center">{item.quantity}</span>
+              <Button size="sm" variant="outline" onClick={() => changeQty(item.product._id, item.quantity + 1)}>+</Button>
+            </div>
+            <Button size="icon" variant="ghost" onClick={() => removeItem(item.product._id)}><X className="h-4 w-4" /></Button>
           </div>
         ))}
       </div>

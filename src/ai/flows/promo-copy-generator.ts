@@ -8,12 +8,9 @@
  * - GeneratePromoCopyOutput - The return type for the generatePromoCopy function.
  */
 
-import { Groq } from 'groq-sdk';
+import { groq } from '@/ai/genkit';
 import { z } from 'zod';
 
-const groq = new Groq({
-  apiKey: ""
-});
 const GeneratePromoCopyInputSchema = z.object({
   productName: z.string().describe('The name of the product.'),
   oldPrice: z.number().describe('The previous price of the product.'),

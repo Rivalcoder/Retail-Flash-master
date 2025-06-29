@@ -1,0 +1,150 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Wireless Bluetooth Headphones",
+    "price": 89.99,
+    "description": "Premium wireless headphones with active noise cancellation and 30-hour battery life. Features premium audio drivers, comfortable memory foam ear cushions, and seamless Bluetooth 5.0 connectivity. Perfect for music lovers, professionals, and travelers.",
+    "category": "Electronics",
+    "stock": 150,
+    "imageUrl": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+    "tags": ["wireless", "bluetooth", "noise-cancellation", "premium", "audio"],
+    "specifications": {
+      "batteryLife": "30 hours",
+      "connectivity": "Bluetooth 5.0",
+      "weight": "250g",
+      "color": "Black",
+      "noiseCancellation": "Active",
+      "driverSize": "40mm",
+      "frequencyResponse": "20Hz-20kHz"
+    }
+  },
+  {
+    "id": "prod_002",
+    "name": "Smart Fitness Watch",
+    "price": 199.99,
+    "description": "Advanced fitness tracking smartwatch with heart rate monitor, GPS, and water resistance. Features a bright AMOLED display, 7-day battery life, and comprehensive health metrics tracking. Perfect for athletes and health-conscious individuals.",
+    "category": "Fitness",
+    "stock": 75,
+    "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+    "tags": ["fitness", "smartwatch", "health", "tracking", "gps"],
+    "specifications": {
+      "display": "1.4 inch AMOLED",
+      "batteryLife": "7 days",
+      "waterResistance": "5ATM",
+      "sensors": ["Heart Rate", "GPS", "Accelerometer", "Gyroscope"],
+      "compatibility": ["iOS", "Android"],
+      "weight": "45g"
+    }
+  },
+  {
+    "id": "prod_003",
+    "name": "Organic Cotton T-Shirt",
+    "price": 24.99,
+    "description": "Comfortable and sustainable organic cotton t-shirt made from 100% certified organic cotton. Available in multiple colors and sizes. Features a classic fit, reinforced stitching, and eco-friendly production process. Perfect for everyday wear.",
+    "category": "Clothing",
+    "stock": 300,
+    "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+    "tags": ["organic", "cotton", "sustainable", "comfortable", "casual"],
+    "specifications": {
+      "material": "100% Organic Cotton",
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "colors": ["White", "Black", "Navy", "Gray", "Forest Green"],
+      "care": "Machine wash cold, tumble dry low",
+      "weight": "180 GSM",
+      "fit": "Classic"
+    }
+  },
+  {
+    "id": "prod_004",
+    "name": "Stainless Steel Water Bottle",
+    "price": 34.99,
+    "description": "Premium insulated stainless steel water bottle with double-wall vacuum insulation. Keeps drinks cold for 24 hours or hot for 12 hours. Features a leak-proof design, BPA-free construction, and wide mouth for easy cleaning.",
+    "category": "Home & Kitchen",
+    "stock": 200,
+    "imageUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400",
+    "tags": ["insulated", "stainless-steel", "eco-friendly", "bpa-free", "leak-proof"],
+    "specifications": {
+      "capacity": "32 oz (946ml)",
+      "material": "18/8 Stainless Steel",
+      "insulation": "Double-wall vacuum",
+      "coldRetention": "24 hours",
+      "hotRetention": "12 hours",
+      "colors": ["Silver", "Black", "Blue", "Rose Gold"],
+      "weight": "450g"
+    }
+  },
+  {
+    "id": "prod_005",
+    "name": "Wireless Charging Pad",
+    "price": 49.99,
+    "description": "Fast wireless charging pad compatible with all Qi-enabled devices. Features 15W fast charging, LED indicator lights, and non-slip silicone surface. Includes overcharge protection and temperature control for safe charging.",
+    "category": "Electronics",
+    "stock": 120,
+    "imageUrl": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400",
+    "tags": ["wireless-charging", "qi-compatible", "fast-charging", "smartphone"],
+    "specifications": {
+      "powerOutput": "15W",
+      "compatibility": "Qi-enabled devices",
+      "chargingSpeed": "Fast",
+      "protection": ["Overcharge", "Temperature", "Short-circuit"],
+      "material": "Silicone + ABS",
+      "dimensions": "100mm x 100mm x 8mm"
+    }
+  },
+  {
+    "id": "prod_006",
+    "name": "Yoga Mat Premium",
+    "price": 39.99,
+    "description": "High-quality yoga mat made from eco-friendly TPE material. Features excellent grip, cushioning, and durability. Perfect for yoga, pilates, and fitness activities. Includes carrying strap and is available in multiple colors.",
+    "category": "Fitness",
+    "stock": 180,
+    "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+    "tags": ["yoga", "fitness", "eco-friendly", "non-slip", "cushioned"],
+    "specifications": {
+      "material": "TPE (Thermoplastic Elastomer)",
+      "thickness": "6mm",
+      "dimensions": "183cm x 61cm",
+      "weight": "2.5kg",
+      "colors": ["Purple", "Blue", "Green", "Black"],
+      "features": ["Non-slip", "Moisture-resistant", "Eco-friendly"]
+    }
+  },
+  {
+    "id": "prod_007",
+    "name": "Smart LED Light Bulb",
+    "price": 19.99,
+    "description": "WiFi-enabled smart LED light bulb with 16 million colors and voice control. Compatible with Alexa, Google Assistant, and Apple HomeKit. Features scheduling, dimming, and energy-efficient operation. Perfect for smart home automation.",
+    "category": "Home & Kitchen",
+    "stock": 250,
+    "imageUrl": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400",
+    "tags": ["smart-home", "led", "wifi", "voice-control", "energy-efficient"],
+    "specifications": {
+      "brightness": "800 lumens",
+      "colorTemperature": "2700K-6500K",
+      "colors": "16 million",
+      "wattage": "9W",
+      "lifespan": "25,000 hours",
+      "connectivity": "WiFi 2.4GHz",
+      "compatibility": ["Alexa", "Google Assistant", "Apple HomeKit"]
+    }
+  },
+  {
+    "id": "prod_008",
+    "name": "Portable Bluetooth Speaker",
+    "price": 79.99,
+    "description": "Waterproof portable Bluetooth speaker with 360-degree sound and 20-hour battery life. Features built-in microphone for calls, rugged design for outdoor use, and wireless stereo pairing. Perfect for parties, outdoor activities, and travel.",
+    "category": "Electronics",
+    "stock": 90,
+    "imageUrl": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
+    "tags": ["portable", "bluetooth", "waterproof", "outdoor", "stereo"],
+    "specifications": {
+      "batteryLife": "20 hours",
+      "waterproof": "IPX7",
+      "connectivity": "Bluetooth 5.0",
+      "powerOutput": "20W",
+      "weight": "1.2kg",
+      "dimensions": "18cm x 7cm",
+      "features": ["360° Sound", "Stereo Pairing", "Built-in Mic"]
+    }
+  }
+] 

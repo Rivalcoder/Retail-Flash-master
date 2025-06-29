@@ -8,12 +8,9 @@
  * - AnswerQuestionOutput - The return type for the answerQuestion function.
  */
 
-import { Groq } from 'groq-sdk';
+import { groq } from '@/ai/genkit';
 import { z } from 'zod';
 
-const groq = new Groq({
-  apiKey: ""
-});
 const AnswerQuestionInputSchema = z.object({
   productId: z.string().describe('The ID of the product the question is about.'),
   question: z.string().describe('The question the customer is asking.'),

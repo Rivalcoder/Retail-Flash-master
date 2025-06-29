@@ -12,7 +12,7 @@ export default function WishlistDrawer({ open, onClose }: { open: boolean; onClo
   }, [open]);
 
   const removeItem = (id: string) => {
-    const updated = wishlist.filter(item => item.id !== id);
+    const updated = wishlist.filter(item => item._id !== id);
     setWishlist(updated);
     localStorage.setItem('wishlist', JSON.stringify(updated));
   };
@@ -25,13 +25,13 @@ export default function WishlistDrawer({ open, onClose }: { open: boolean; onClo
       </div>
       <div className="p-4 flex-1 overflow-y-auto space-y-4">
         {wishlist.length === 0 ? <p className="text-center text-gray-500">Your wishlist is empty.</p> : wishlist.map(item => (
-          <div key={item.id} className="flex gap-3 items-center border-b pb-2">
-            <img src={item.image} alt={item.name} className="w-14 h-14 rounded object-cover" />
+          <div key={item._id} className="flex gap-3 items-center border-b pb-2">
+            <img src={item.image || item.imageUrl} alt={item.name} className="w-12 h-12 rounded object-cover" />
             <div className="flex-1">
-              <div className="font-semibold">{item.name}</div>
-              <div className="text-sm text-gray-500">₹{item.price.toLocaleString()}</div>
+              <div className="font-medium">{item.name}</div>
+              <div className="text-sm text-muted-foreground">₹{item.price}</div>
             </div>
-            <Button size="icon" variant="ghost" onClick={() => removeItem(item.id)}><X className="h-4 w-4" /></Button>
+            <Button size="icon" variant="ghost" onClick={() => removeItem(item._id)}><X className="h-4 w-4" /></Button>
           </div>
         ))}
       </div>

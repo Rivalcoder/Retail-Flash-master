@@ -36,7 +36,7 @@ export default function PromoGenerator({ products }: PromoGeneratorProps) {
             </TableHeader>
             <TableBody>
               {products.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product._id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {product.promoCopy || "No promo copy generated yet."}

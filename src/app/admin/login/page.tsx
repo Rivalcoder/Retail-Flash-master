@@ -41,14 +41,49 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔐 Admin login form submitted');
+    console.log('📝 Form data:', { email: formData.email, password: '***' });
+    
     setIsLoading(true);
     
-    // Simulate API call and redirect to admin dashboard
-    setTimeout(() => {
+    try {
+      console.log('🌐 Making API call to /api/auth/admin/login');
+      const response = await fetch('/api/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('📡 Response status:', response.status);
+      const data = await response.json();
+      console.log('📡 Response data:', data);
+
+      if (response.ok) {
+        // Store admin data in localStorage
+        localStorage.setItem('adminData', JSON.stringify(data.admin));
+        localStorage.setItem('adminToken', data.token);
+        
+        console.log('✅ Admin login successful:', data.admin.email);
+        
+        // Add a small delay to ensure localStorage is properly set
+        setTimeout(() => {
+          // Redirect to admin dashboard
+          router.push('/admin/dashboard');
+        }, 100);
+      } else {
+        // Handle error
+        console.error('❌ Login failed:', data.error);
+        // You can add toast notification here
+        alert(data.error || 'Login failed');
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      alert('Network error. Please try again.');
+    } finally {
       setIsLoading(false);
-      console.log('Admin login attempt:', formData);
-      router.push('/admin/dashboard');
-    }, 2000);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -81,25 +116,32 @@ export default function AdminLoginPage() {
         <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse delay-2000"></div>
         
         {/* Floating particles */}
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-white/30 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.3, 0.8, 0.3],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+        {[...Array(15)].map((_, i) => {
+          // Use deterministic values based on index to prevent hydration mismatch
+          const left = ((i * 7) % 100) + (i * 3) % 20; // Deterministic positioning
+          const top = ((i * 11) % 100) + (i * 5) % 15; // Deterministic positioning
+          const delay = (i * 0.3) % 2; // Deterministic delay
+          
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white/30 rounded-full"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.8, 0.3],
+              }}
+              transition={{
+                duration: 3 + (i % 2), // Deterministic duration
+                repeat: Infinity,
+                delay: delay,
+              }}
+            />
+          );
+        })}
       </div>
 
       <motion.div

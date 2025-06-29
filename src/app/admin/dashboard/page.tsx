@@ -8,23 +8,101 @@ import PromoGenerator from "@/components/promo-generator";
 import QAndABot from "@/components/q-and-a-bot";
 import { initialProducts } from "@/lib/mock-data";
 import type { Product } from "@/lib/types";
+import { getAdminData, isAdminLoggedIn, logoutAdmin, getAdminAuthHeaders } from "@/lib/auth-utils";
 import {
   Bot,
   LayoutDashboard,
   Sparkles,
   Shield,
+  User,
+  LogOut,
+  Package,
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import InventoryPage from "@/components/inventory-page";
 
 export default function AdminDashboardPage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [updatedIds, setUpdatedIds] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
   const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isPending, startTransition] = useTransition();
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+  const [adminData, setAdminData] = useState<any>(null);
   const { toast } = useToast();
+  const router = useRouter();
+
+  // Set client flag to prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Load admin data on client side
+  useEffect(() => {
+    if (isClient) {
+      // Try to get admin data multiple times to ensure it's loaded
+      const loadAdminData = () => {
+        const data = getAdminData();
+        if (data) {
+          setAdminData(data);
+        } else {
+          // Retry after a short delay if data is not available
+          setTimeout(() => {
+            const retryData = getAdminData();
+            if (retryData) {
+              setAdminData(retryData);
+            }
+          }, 50);
+        }
+      };
+      
+      loadAdminData();
+    }
+  }, [isClient]);
+
+  // Load products from database on mount
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data.products || []);
+        } else {
+          console.error('Failed to load products:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Failed to load products:', error);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+
+    // Only load products if admin is authenticated
+    if (isClient && adminData && isAdminLoggedIn()) {
+      loadProducts();
+    }
+  }, [isClient, adminData]); // Include adminData dependency
+  
+  // Handle authentication check on mount - with delay to allow localStorage to be ready
+  useEffect(() => {
+    if (isClient) {
+      // Add a small delay to ensure localStorage is properly loaded
+      const timer = setTimeout(() => {
+        const currentAdminData = getAdminData();
+        if (!currentAdminData || !isAdminLoggedIn()) {
+          router.push('/admin/login');
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isClient, router]);
 
   // Listen for sidebar toggle events from the layout
   useEffect(() => {
@@ -55,79 +133,153 @@ export default function AdminDashboardPage() {
     };
   }, []);
 
+  // Don't render anything until client-side hydration is complete
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Wait for admin data to be loaded before checking authentication
+  if (isClient && adminData === null) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check admin authentication after client-side hydration and data loading
+  if (!adminData || !isAdminLoggedIn()) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while products are being loaded
+  if (isLoadingProducts) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleLogout = () => {
+    logoutAdmin();
+    router.push('/admin/login');
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
+  };
+
   const handleCatalogUpdate = async (file: File) => {
     startTransition(async () => {
       try {
         const text = await file.text();
-        const newProductsData: Omit<Product, 'promoCopy' | 'isNew' | 'oldPrice'>[] = JSON.parse(text);
+        const newProductsData = JSON.parse(text);
 
-        const currentProductsMap = new Map(
-          products.map((p) => [p.id, p])
-        );
-        const allProductIds = new Set(newProductsData.map(p => p.id));
-        
-        let finalProducts: Product[] = products.filter(p => allProductIds.has(p.id));
-        let finalProductsMap = new Map(finalProducts.map(p => [p.id, p]));
+        // Get admin authentication headers
+        const authHeaders = getAdminAuthHeaders();
+        if (!authHeaders['x-admin-id']) {
+          throw new Error('Admin authentication required. Please log in again.');
+        }
+
+        // Upload to database via API
+        const response = await fetch('/api/products/upload-json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders,
+          },
+          body: JSON.stringify(newProductsData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to upload products');
+        }
+
+        // Process AI promo generation for new/updated products
+        const productsNeedingPromo = result.results
+          .filter((r: any) => r.status === 'created' || r.status === 'updated')
+          .map((r: any) => ({
+            ...newProductsData.find((p: any) => p.id === r.id),
+            _id: r._id // Add the MongoDB _id from the result
+          }))
+          .filter(Boolean);
 
         const generationPromises: Promise<void>[] = [];
-        const productUpdates: Product[] = [];
         const justUpdatedIds: string[] = [];
 
-        for (const newProductData of newProductsData) {
-          const oldProduct = finalProductsMap.get(newProductData.id);
-          let productWithChanges: Product = { ...newProductData, promoCopy: oldProduct?.promoCopy };
-          let needsPromoUpdate = false;
-
-          if (!oldProduct) {
-            productWithChanges.isNew = true;
-            needsPromoUpdate = true;
-          } else {
-            productWithChanges = { ...oldProduct, ...newProductData };
-            if (oldProduct.price !== newProductData.price) {
-              productWithChanges.oldPrice = oldProduct.price;
-              needsPromoUpdate = true;
-            }
-            if(oldProduct.description !== newProductData.description){
-                needsPromoUpdate = true;
-            }
-          }
-
-          if (needsPromoUpdate) {
-            justUpdatedIds.push(productWithChanges.id);
-            const promise = generatePromoCopy({
-              productName: productWithChanges.name,
-              oldPrice: productWithChanges.oldPrice || productWithChanges.price,
-       
-              newPrice: productWithChanges.price,
-              description: productWithChanges.description || "",
-            }).then((output) => {
-                productWithChanges.promoCopy = output.promoCopy;
-            }).catch(err => {
-                console.error(`Failed to generate promo copy for ${productWithChanges.name}`, err);
-                productWithChanges.promoCopy = "Failed to generate new promo copy.";
+        for (const productData of productsNeedingPromo) {
+          justUpdatedIds.push(productData.id);
+          const promise = generatePromoCopy({
+            productName: productData.name,
+            oldPrice: productData.price,
+            newPrice: productData.price,
+            description: productData.description || "",
+          }).then((output) => {
+            // Update the product with generated promo copy using MongoDB _id
+            return fetch(`/api/products/${productData._id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders,
+              },
+              body: JSON.stringify({ promoCopy: output.promoCopy }),
+            }).then(() => {
+              // Return void to match expected Promise<void>
             });
-            generationPromises.push(promise);
-          }
-          productUpdates.push(productWithChanges);
+          }).catch(err => {
+            console.error(`Failed to generate promo copy for ${productData.name}`, err);
+          });
+          generationPromises.push(promise);
         }
 
         await Promise.all(generationPromises);
 
-        setProducts(productUpdates);
+        // Refresh products from database
+        setIsLoadingProducts(true);
+        const productsResponse = await fetch('/api/products');
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json();
+          setProducts(productsData.products || []);
+        }
+        setIsLoadingProducts(false);
+
         setUpdatedIds(justUpdatedIds);
 
         toast({
-          title: "Catalog Updated",
-          description: `Processed ${newProductsData.length} products. AI insights generated.`,
+          title: "Catalog Updated Successfully",
+          description: `Processed ${result.summary.total} products. ${result.summary.added} added, ${result.summary.updated} updated. AI promo copy generated.`,
         });
 
-        setTimeout(() => setUpdatedIds([]), 2000);
+        setTimeout(() => setUpdatedIds([]), 3000);
       } catch (error) {
         console.error("Failed to update catalog:", error);
         toast({
           variant: "destructive",
           title: "Update Failed",
-          description: "Could not parse or process the JSON file.",
+          description: error instanceof Error ? error.message : "Could not process the JSON file.",
         });
       }
     });
@@ -135,6 +287,7 @@ export default function AdminDashboardPage() {
 
   const navItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", color: "from-blue-500 to-indigo-600" },
+    { id: "inventory", icon: Package, label: "Inventory", color: "from-green-500 to-emerald-600" },
     { id: "promo-generator", icon: Sparkles, label: "Promo", color: "from-purple-500 to-pink-600" },
     { id: "q-and-a-bot", icon: Bot, label: "Q&A Bot", color: "from-emerald-500 to-teal-600" },
     { id: "admin", icon: Shield, label: "Admin", color: "from-orange-500 to-red-600" },
@@ -179,6 +332,17 @@ export default function AdminDashboardPage() {
               );
             })}
           </nav>
+
+          {/* Logout Button */}
+          <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="font-medium">Logout</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -188,6 +352,11 @@ export default function AdminDashboardPage() {
           {activeSection === "dashboard" && (
           <Dashboard products={products} updatedIds={updatedIds} />
           )}
+          {activeSection === "inventory" && (
+            <div className="w-full max-w-none">
+              <InventoryPage />
+            </div>
+          )}
           {activeSection === "promo-generator" && (
           <PromoGenerator products={products} />
           )}
@@ -195,7 +364,7 @@ export default function AdminDashboardPage() {
           <QAndABot products={products} />
           )}
           {activeSection === "admin" && (
-          <div className="mx-auto max-w-lg">
+          <div className="w-full max-w-none">
             <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
           </div>
           )}
