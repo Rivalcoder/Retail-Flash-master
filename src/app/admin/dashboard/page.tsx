@@ -186,18 +186,18 @@ export default function AdminDashboardPage() {
       <div className="flex-1 overflow-hidden">
         <div className="h-full p-8 overflow-y-auto">
           {activeSection === "dashboard" && (
-            <Dashboard products={products} updatedIds={updatedIds} />
+          <Dashboard products={products} updatedIds={updatedIds} />
           )}
           {activeSection === "promo-generator" && (
-            <PromoGenerator products={products} />
+          <PromoGenerator products={products} />
           )}
           {activeSection === "q-and-a-bot" && (
-            <QAndABot products={products} />
+          <QAndABot products={products} />
           )}
           {activeSection === "admin" && (
-            <div className="mx-auto max-w-lg">
-              <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
-            </div>
+          <div className="mx-auto max-w-lg">
+            <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
+          </div>
           )}
         </div>
       </div>

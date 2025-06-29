@@ -48,7 +48,7 @@ export default function QAndABot({ products }: QAndABotProps) {
       });
     }
   }, [messages]);
-
+  
   const handleSend = async () => {
     if (!input.trim()) {
       toast({
@@ -119,7 +119,7 @@ export default function QAndABot({ products }: QAndABotProps) {
     <div className="flex gap-6 h-full">
       {/* Left Sidebar - Product Selection & Suggestions */}
       <div className="w-80 space-y-6 overflow-y-auto">
-        {/* Product Selection */}
+          {/* Product Selection */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -165,25 +165,25 @@ export default function QAndABot({ products }: QAndABotProps) {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white dark:border-gray-700 shadow-sm">
-                    <img 
+                  <img 
                       src={selectedProduct.image || selectedProduct.imageUrl}
-                      alt={selectedProduct.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 dark:text-white truncate">{selectedProduct.name}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <span>₹{Number(selectedProduct.price).toLocaleString()}</span>
-                      <span>•</span>
+                    <span>•</span>
                       <span>{selectedProduct.stock} in stock</span>
-                      {selectedProduct.isNew && (
-                        <>
-                          <span>•</span>
-                          <Badge className="bg-green-500 text-white text-xs">New</Badge>
-                        </>
-                      )}
-                    </div>
+                    {selectedProduct.isNew && (
+                      <>
+                        <span>•</span>
+                        <Badge className="bg-green-500 text-white text-xs">New</Badge>
+                      </>
+                    )}
+                  </div>
                   </div>
                 </div>
               </motion.div>
@@ -251,7 +251,7 @@ export default function QAndABot({ products }: QAndABotProps) {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm truncate">{product.name}</div>
                     <div className="text-xs text-muted-foreground">₹{Number(product.price).toLocaleString()}</div>
-                  </div>
+              </div>
                   {product.isNew && (
                     <Badge className="bg-green-500 text-white text-xs">New</Badge>
                   )}
@@ -280,12 +280,12 @@ export default function QAndABot({ products }: QAndABotProps) {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
               <div className="space-y-4">
-                {messages.length === 0 && (
-                  <motion.div
+                  {messages.length === 0 && (
+                    <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-12"
-                  >
+                    >
                     <Bot className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                       Welcome to AI Shopping Assistant
@@ -293,8 +293,8 @@ export default function QAndABot({ products }: QAndABotProps) {
                     <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                       Select a product and ask any questions. I'll help you make informed purchasing decisions!
                     </p>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
 
                 <AnimatePresence>
                   {messages.map((message, index) => (
@@ -345,51 +345,51 @@ export default function QAndABot({ products }: QAndABotProps) {
                   ))}
                 </AnimatePresence>
 
-                {isPending && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                  {isPending && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
                     className="flex gap-3 justify-start"
-                  >
+                    >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
                         AI
                       </AvatarFallback>
-                    </Avatar>
+                      </Avatar>
                     <div className="bg-slate-100 dark:bg-slate-800 border rounded-lg p-3">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
+                      </div>
+                    </motion.div>
+                  )}
               </div>
             </ScrollArea>
 
             {/* Input Area */}
             <div className="border-t p-4 flex-shrink-0">
               <div className="flex gap-3">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Ask a question about the product..."
                   className="flex-1"
                   disabled={isPending}
-                />
-                <Button
-                  onClick={handleSend}
+              />
+              <Button 
+                onClick={handleSend} 
                   disabled={!input.trim() || isPending}
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                >
+              >
                   {isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Send className="h-4 w-4" />
+                <Send className="h-4 w-4" />
                   )}
-                </Button>
+              </Button>
               </div>
             </div>
           </CardContent>

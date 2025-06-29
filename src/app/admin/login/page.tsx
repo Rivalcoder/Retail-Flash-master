@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AuthLayout from '@/components/auth-layout';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +29,7 @@ export default function AdminLoginPage() {
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,10 +43,11 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate API call and redirect to admin dashboard
     setTimeout(() => {
       setIsLoading(false);
       console.log('Admin login attempt:', formData);
+      router.push('/admin/dashboard');
     }, 2000);
   };
 
