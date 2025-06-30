@@ -11,6 +11,7 @@
 import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { z } from 'zod';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const GeneratePromoCopyInputSchema = z.object({
   productName: z.string().describe('The name of the product.'),
@@ -29,188 +30,41 @@ export type GeneratePromoCopyOutput = z.infer<typeof GeneratePromoCopyOutputSche
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 console.log('API Key available:', !!apiKey);
 
-export async function generatePromoCopy(input: GeneratePromoCopyInput): Promise<GeneratePromoCopyOutput> {
-  // Validate input
-  const validatedInput = GeneratePromoCopyInputSchema.parse(input);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
+
+export async function generatePromoCopy(productData: any) {
+  console.log('generatePromoCopy called with:', productData);
   
-  console.log('Generating promo copy for:', validatedInput); // Debug logging
-  
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const prompt = `Generate ONE compelling promotional tagline for this product.
+
+Product: ${productData.name}
+Price: $${productData.price}
+Original Price: ${productData.oldPrice ? `$${productData.oldPrice}` : 'N/A'}
+Description: ${productData.description}
+
+Create a single catchy tagline (max 12 words) that:
+- Highlights value or savings
+- Uses action words
+- Is memorable and impactful
+- Emphasizes benefits or urgency
+
+Example: "Smart lighting that saves you 40% - Transform your home today!"
+
+Tagline:`;
+
+  console.log('Sending prompt to AI:', prompt);
+
   try {
-    // Check if API key is available
-    if (!apiKey) {
-      throw new Error('Google Generative AI API key is not configured');
-    }
-
-    // Calculate discount percentage and savings
-    const priceChange = validatedInput.oldPrice - validatedInput.newPrice;
-    const discountPercentage = Math.round((priceChange / validatedInput.oldPrice) * 100);
-    const isOnSale = priceChange > 0;
-    const isPriceIncrease = priceChange < 0;
-
-    console.log('Attempting to generate promotional copy...');
-    const { object } = await generateObject({
-      model: google('gemini-2.0-flash-exp'),
-      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-      schema: GeneratePromoCopyOutputSchema,
-      prompt: `You are an expert marketing copywriter specializing in creating compelling promotional copy for e-commerce products. Your goal is to write engaging, persuasive copy that drives sales and highlights key product benefits.
-
-Key Guidelines:
-- Keep copy concise but compelling (2-4 sentences max)
-- Focus on benefits, not just features
-- Use action-oriented language
-- Create urgency when appropriate
-- Highlight price changes effectively
-- Match the tone to the product type
-- Include emotional triggers that motivate purchase
-- End with a clear call-to-action when appropriate
-- Use proper markdown formatting for better presentation
-- Always use ₹ symbol for INR amounts
-- Format large numbers with commas (e.g., ₹1,00,000)
-- Use K for thousands (e.g., ₹50K)
-
-Price Change Context:
-- If price decreased: Emphasize the sale/discount prominently
-- If price increased: Focus on enhanced value, quality, or new features
-- If price unchanged: Focus on product benefits and value proposition
-
-Response Format Guidelines:
-1). Heading:
-    - Provide a clear, concise heading that reflects the promotional offer
-    - Keep it relevant and specific to the product and offer
-    - Use emojis for visual appeal
-    
-2). Description:
-    - Create compelling promotional copy with proper formatting
-    - Use tables for price comparisons when applicable
-    - Use lists for key benefits or features
-    - Use blockquotes for important offers or highlights
-    - Use bold text for emphasis on prices and savings
-    - Use emojis to enhance visual appeal
-    - Keep the response concise and relevant
-    - Use markdown formatting for better presentation
-
-Response Format Examples:
-
-1. For Sale Offers:
-   ### 🎉 Limited Time Sale!
-   | Item | Original Price | Sale Price | Savings |
-   |:-----|:---------------|:-----------|:--------|
-   | ${validatedInput.productName} | ₹${validatedInput.oldPrice.toLocaleString()} | ₹${validatedInput.newPrice.toLocaleString()} | **₹${priceChange.toLocaleString()}** |
-
-   > **🔥 Hot Deal:** Save **${discountPercentage}%** on ${validatedInput.productName}!
-   > 
-   > *${validatedInput.description}*
-   > 
-   > **⏰ Limited Time Offer** - Don't miss out on this incredible deal!
-
-2. For Price Increases:
-   ### ⬆️ Enhanced Value
-   | Feature | Previous | Now |
-   |:--------|:---------|:----|
-   | Price | ₹${validatedInput.oldPrice.toLocaleString()} | ₹${validatedInput.newPrice.toLocaleString()} |
-   | Value | Standard | **Enhanced** |
-
-   > **💎 Premium Quality:** ${validatedInput.productName} now offers enhanced features and superior quality.
-   > 
-   > *${validatedInput.description}*
-   > 
-   > **✨ Worth the Investment** - Experience the difference!
-
-3. For Regular Pricing:
-   ### 💫 Amazing Value
-   | Feature | Details |
-   |:--------|:--------|
-   | Product | ${validatedInput.productName} |
-   | Price | **₹${validatedInput.newPrice.toLocaleString()}** |
-   | Value | Exceptional |
-
-   > **🌟 Perfect Choice:** ${validatedInput.productName} delivers outstanding value at ₹${validatedInput.newPrice.toLocaleString()}.
-   > 
-   > *${validatedInput.description}*
-   > 
-   > **🚀 Get Yours Today** - Limited stock available!
-
-Markdown Formatting Rules:
-1. Headers:
-   - Use ### for main sections
-   - Keep headers concise and descriptive
-   - Add relevant emojis for visual hierarchy
-
-2. Tables:
-   - Use for price comparisons and feature lists
-   - Include relevant metrics
-   - Format numbers with proper separators
-   - Add totals when applicable
-
-3. Lists:
-   - Use for key benefits and features
-   - Keep items concise
-   - Add relevant emojis
-
-4. Blockquotes:
-   - Use for important offers and highlights
-   - Keep them brief and relevant
-
-5. Emphasis:
-   - Use **bold** for important prices and savings
-   - Use *italic* for emphasis
-   - Use \`code\` for technical terms
-
-6. Spacing:
-   - Add blank lines between sections
-   - Keep paragraphs short
-   - Use consistent spacing
-
-7. Emojis:
-   - Use for visual hierarchy
-   - Common emojis:
-     * 🎉 for sales
-     * 💰 for pricing
-     * ⏰ for urgency
-     * 🔥 for hot deals
-     * 💎 for premium
-     * ✨ for value
-     * 🚀 for action
-     * ⬆️ for increases
-     * 💫 for amazing
-     * 🌟 for perfect
-
-Product Information:
-Product: ${validatedInput.productName}
-Previous Price: ₹${validatedInput.oldPrice.toLocaleString()}
-Current Price: ₹${validatedInput.newPrice.toLocaleString()}
-Description: ${validatedInput.description}
-
-${isOnSale ? `🎉 SALE ALERT: Save ₹${priceChange.toLocaleString()} (${discountPercentage}% OFF!)` : ''}
-${isPriceIncrease ? `⚠️ Note: Price has increased by ₹${Math.abs(priceChange).toLocaleString()}` : ''}
-
-Generate compelling promotional copy that will make customers want to buy this product immediately using the formatting guidelines above.`
-    });
-
-    console.log('Successfully generated promotional copy');
-    return object;
-
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const generatedText = response.text().trim();
+    console.log('AI generated text:', generatedText);
+    return generatedText;
   } catch (error) {
-    console.error('Error generating promo copy with Google AI API:', error);
-    
-    // Return a fallback promotional copy
-    const priceChange = validatedInput.oldPrice - validatedInput.newPrice;
-    const isOnSale = priceChange > 0;
-    const discountPercentage = Math.round((priceChange / validatedInput.oldPrice) * 100);
-    
-    let fallbackCopy = `${validatedInput.productName} - `;
-    
-    if (isOnSale) {
-      fallbackCopy += `Now on Sale! Save ${discountPercentage}% - Was ₹${validatedInput.oldPrice.toLocaleString()}, now only ₹${validatedInput.newPrice.toLocaleString()}! `;
-    } else {
-      fallbackCopy += `Available now for ₹${validatedInput.newPrice.toLocaleString()}! `;
-    }
-    
-    fallbackCopy += `${validatedInput.description.slice(0, 100)}... Don't miss out!`;
-    
-    return {
-      promoCopy: fallbackCopy
-    };
+    console.error('Error generating promo copy:', error);
+    return 'Discover amazing deals on premium products!';
   }
 }
 
@@ -229,7 +83,7 @@ export async function generatePromoCopyVariations(
 
     console.log('Attempting to generate promotional copy variations...');
     const { object } = await generateObject({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: z.object({
         variations: z.array(z.string()).describe('Array of promotional copy variations')

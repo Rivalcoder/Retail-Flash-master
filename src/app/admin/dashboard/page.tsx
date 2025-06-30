@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { generatePromoCopy } from "@/ai/flows/promo-copy-generator";
 import AdminPanel from "@/components/admin-panel";
 import Dashboard from "@/components/dashboard";
 import PromoGenerator from "@/components/promo-generator";
@@ -227,17 +226,29 @@ export default function AdminDashboardPage() {
           }))
           .filter(Boolean);
 
+        console.log('Products needing promo generation:', productsNeedingPromo);
+
         const generationPromises: Promise<void>[] = [];
         const justUpdatedIds: string[] = [];
 
         for (const productData of productsNeedingPromo) {
+          console.log('Generating promo for product:', productData.name);
           justUpdatedIds.push(productData.id);
-          const promise = generatePromoCopy({
-            productName: productData.name,
-            oldPrice: productData.price,
-            newPrice: productData.price,
-            description: productData.description || "",
-          }).then((output) => {
+          const promise = fetch('/api/promo/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: productData.name,
+              price: productData.price,
+              oldPrice: productData.oldPrice || productData.price,
+              description: productData.description || "",
+            }),
+          }).then(async (response) => {
+            const result = await response.json();
+            console.log('Generated promo copy for', productData.name, ':', result.promoCopy);
+            
             // Update the product with generated promo copy using MongoDB _id
             return fetch(`/api/products/${productData._id}`, {
               method: 'PATCH',
@@ -245,8 +256,9 @@ export default function AdminDashboardPage() {
                 'Content-Type': 'application/json',
                 ...authHeaders,
               },
-              body: JSON.stringify({ promoCopy: output.promoCopy }),
+              body: JSON.stringify({ promoCopy: result.promoCopy }),
             }).then(() => {
+              console.log('Updated product with promo copy:', productData.name);
               // Return void to match expected Promise<void>
             });
           }).catch(err => {
@@ -255,7 +267,9 @@ export default function AdminDashboardPage() {
           generationPromises.push(promise);
         }
 
+        console.log('Waiting for all promo generation to complete...');
         await Promise.all(generationPromises);
+        console.log('All promo generation completed');
 
         // Refresh products from database
         setIsLoadingProducts(true);

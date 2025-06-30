@@ -78,12 +78,12 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
 
     console.log('Attempting to generate AI response...');
     const { object } = await generateObject({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: AnswerQuestionOutputSchema,
       prompt: `You are a customer service chatbot for an e-commerce website. 
-               You help customers by answering questions about specific products.
-               Be concise, helpful, and professional in your responses.
+                   You help customers by answering questions about specific products.
+                   Be concise, helpful, and professional in your responses.
                
                COMPLETE PRODUCT CATALOG DATA:
                ${JSON.stringify(productsData, null, 2)}
@@ -197,4 +197,4 @@ export async function getAvailableModels() {
     console.error('Error fetching models:', error);
     return [];
   }
-} 
+}
