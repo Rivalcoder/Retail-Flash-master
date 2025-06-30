@@ -522,7 +522,7 @@ export default function InventoryPage() {
                                     </p>
                                     <div className="flex items-center pt-2">
                                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                                        ${product.price.toFixed(2)}
+                                        ₹{product.price.toFixed(2)}
                                       </span>
                                     </div>
                                   </div>
@@ -555,7 +555,7 @@ export default function InventoryPage() {
                         </td>
                         <td className="p-4">
                           <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                            ${product.price.toFixed(2)}
+                            ₹{product.price.toFixed(2)}
                           </span>
                         </td>
                         <td className="p-4">

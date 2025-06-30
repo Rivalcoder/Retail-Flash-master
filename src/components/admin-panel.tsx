@@ -244,7 +244,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Compact wireless speaker with deep bass and 12-hour playtime",
         category: "Electronics",
         stock: 75,
-        imageUrl: "https://images.unsplash.com/photo-1512446733611-9099a758e082?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1512499617640-c2f999098c01?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "sample_006",
@@ -253,7 +253,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Creative 150-piece building blocks set for kids aged 3+",
         category: "Toys",
         stock: 60,
-        imageUrl: "https://images.unsplash.com/photo-1511453673005-6b8cfc5e8a81?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "sample_007",
