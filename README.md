@@ -2,6 +2,12 @@
 
 A modern, AI-powered retail platform built with Next.js 15, featuring real-time inventory management, AI-generated promotional content, and intelligent customer support powered by Google Gemini 2.0 Flash.
 
+## 🌐 Live Demo
+
+**Visit the live application:** [https://retail-copilot.vercel.app/](https://retail-copilot.vercel.app/)
+
+The application is fully deployed and functional on Vercel with all features working including AI-powered promo copy generation, intelligent Q&A bot, and real-time inventory management.
+
 ## ✨ Features
 
 ### 🛍️ **Live Inventory Dashboard**
@@ -24,9 +30,9 @@ A modern, AI-powered retail platform built with Next.js 15, featuring real-time 
 
 ### 🔐 **Secure Admin Controls**
 - JWT-based authentication system
-- Role-based access control (Admin/Customer)
 - Easy product management via JSON uploads
 - Real-time catalog updates with instant reflection
+- Role-based access control for admin operations
 
 ### 🎨 **Modern UI/UX**
 - Beautiful, responsive design with dark mode support
@@ -43,6 +49,7 @@ A modern, AI-powered retail platform built with Next.js 15, featuring real-time 
 - **UI Components**: Radix UI, Framer Motion, Lucide Icons
 - **Database**: MongoDB with separate databases for admin, users, and products
 - **Styling**: Tailwind CSS with custom design system
+- **Deployment**: Vercel (Production)
 
 ## 🚀 Quick Start
 
@@ -89,29 +96,21 @@ A modern, AI-powered retail platform built with Next.js 15, featuring real-time 
 6. **Access the application**
    - Main application: http://localhost:3000
    - Admin dashboard: http://localhost:3000/admin/login
-   - Customer login: http://localhost:3000/login
 
-## 📋 Default Credentials
-
-After database initialization, you can use these default accounts:
+## 📋 Admin Credentials
 
 ### Admin Account
-- **Email**: admin@retailflash.com
-- **Password**: admin123456
+- **Email**: new@gmail.com
+- **Password**: new@gmail.com
 - **Access**: Full admin dashboard with all features
-
-### Customer Account
-- **Email**: customer@retailflash.com
-- **Password**: customer123
-- **Access**: Customer-facing features and Q&A bot
 
 ## 🔄 Workflows
 
 ### 1. Admin Dashboard Workflow
 
 #### **Initial Setup**
-1. Navigate to `/admin/login`
-2. Login with admin credentials
+1. Navigate to `/admin/login` or visit [https://retail-copilot.vercel.app/admin/login](https://retail-copilot.vercel.app/admin/login)
+2. Login with admin credentials (new@gmail.com / new@gmail.com)
 3. Access the main dashboard with sidebar navigation
 
 #### **Inventory Management**
@@ -149,7 +148,7 @@ After database initialization, you can use these default accounts:
 ### 2. Customer Experience Workflow
 
 #### **Product Browsing**
-1. **Landing Page**: View featured products and platform overview
+1. **Landing Page**: View featured products and platform overview at [https://retail-copilot.vercel.app/](https://retail-copilot.vercel.app/)
 2. **Product Catalog**: Browse all available products
 3. **Search & Filter**: Find products by category, price, or keywords
 4. **Product Details**: View detailed product information, images, and specifications
@@ -232,7 +231,6 @@ Retail-Flash-master/
 
 ### Authentication
 - `POST /api/auth/admin/login` - Admin login
-- `POST /api/auth/customer/login` - Customer login
 - `POST /api/auth/signup` - User registration
 
 ### Products
@@ -271,6 +269,9 @@ Retail-Flash-master/
 ```
 
 ## 🚀 Deployment
+
+### Live Production Deployment
+The application is currently deployed and live at: [https://retail-copilot.vercel.app/](https://retail-copilot.vercel.app/)
 
 ### Vercel Deployment
 1. Connect your GitHub repository to Vercel
@@ -323,9 +324,12 @@ npm run genkit:watch
 For support and questions:
 - Check the documentation above
 - Review the sample product catalog format
-- Test with the provided default credentials
+- Test with the provided admin credentials
 - Ensure all environment variables are properly configured
+- Visit the live demo at [https://retail-copilot.vercel.app/](https://retail-copilot.vercel.app/)
 
 ---
 
 **Built with ❤️ using Next.js, MongoDB, and Google Gemini AI**
+
+**Live Demo:** [https://retail-copilot.vercel.app/](https://retail-copilot.vercel.app/)
