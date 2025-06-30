@@ -127,7 +127,7 @@ export default function CustomerSignupPage() {
             </motion.div>
             <motion.div variants={FADE_UP_ANIMATION_VARIANTS}>
               <CardDescription className="text-gray-300">
-                Enter your details to get started with RetailFlow AI.
+                Enter your details to get started with Retail Flash.
               </CardDescription>
             </motion.div>
           </CardHeader>

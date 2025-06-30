@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Store } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 
@@ -34,8 +34,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           variants={FADE_DOWN_ANIMATION_VARIANTS}
         >
           <Link href="/" className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="font-bold">RetailFlow AI</span>
+            <Store className="h-6 w-6 text-primary" />
+            <span className="font-bold">Retail Flash</span>
           </Link>
           <div className="flex flex-1 items-center justify-end space-x-4">
             {pathname.includes('/admin') ? (

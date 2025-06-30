@@ -7,7 +7,7 @@ import type { Product } from "@/lib/types";
 import { getCustomerData, isCustomerLoggedIn, logoutCustomer } from "@/lib/auth-utils";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ShoppingCart, User, Home, Tag, Gift, Heart, Star, ChevronRight, LogOut } from "lucide-react";
+import { ShoppingCart, User, Home, Tag, Gift, Heart, Star, ChevronRight, LogOut, Store, Sparkles } from "lucide-react";
 import CartDrawer from '@/components/CartDrawer';
 import WishlistDrawer from '@/components/WishlistDrawer';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -74,7 +74,7 @@ export default function CustomerDashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
-                <Gift className="h-6 w-6" /> Retail Flash
+                <Store className="h-6 w-6" /> Retail Flash
               </div>
               
               {/* Customer Info */}
@@ -202,7 +202,7 @@ export default function CustomerDashboardPage() {
       <footer className="border-t py-6 mt-8 bg-white/80 dark:bg-gray-900/80">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
-            <Gift className="h-6 w-6" /> Retail Flash
+            <Store className="h-6 w-6" /> Retail Flash
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
             <Link href="#">About</Link>

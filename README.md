@@ -1,22 +1,22 @@
-# RetailFlow AI
+# Retail Flash
 
-A modern AI-powered retail management platform built with Next.js, TypeScript, and Tailwind CSS.
+A modern, AI-powered retail platform built with Next.js, featuring real-time inventory management, AI-generated promotional content, and intelligent customer support.
 
 ## Features
 
 - **Live Inventory Dashboard**: Real-time product catalog visualization
-- **AI-Powered Promo Copy**: Automatic marketing copy generation
-- **Intelligent Q&A Bot**: Customer service chatbot with catalog access
-- **Secure Admin Controls**: Product catalog management
-- **Real-time Analytics**: AI-driven insights and reporting
+- **AI-Powered Promo Copy**: Automatic generation of compelling marketing content
+- **Intelligent Q&A Bot**: Customer support with real-time catalog access
+- **Secure Admin Controls**: Easy product management via JSON uploads
+- **Modern UI/UX**: Beautiful, responsive design with dark mode support
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, MongoDB
 - **AI**: Google Gemini 2.0 Flash, Genkit
-- **Database**: MongoDB with Mongoose
-- **Authentication**: Custom auth system with bcryptjs
+- **Authentication**: Custom JWT-based auth system
+- **UI Components**: Radix UI, Framer Motion
 
 ## Getting Started
 
@@ -25,6 +25,13 @@ A modern AI-powered retail management platform built with Next.js, TypeScript, a
 3. Set up environment variables
 4. Run the development server: `npm run dev`
 
+## Environment Variables
+
+```env
+MONGO_URL=your_mongodb_connection_string
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
+```
+
 ## License
 
-© 2025 RetailFlow AI. All rights reserved.
+© 2025 Retail Flash. All rights reserved.

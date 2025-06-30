@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Bot, Zap, Shield, BarChart, ShoppingCart, Cpu } from "lucide-react"
+import { Bot, Store, Shield, BarChart, ShoppingCart, Cpu } from "lucide-react"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { ThemeToggle } from "./theme-toggle"
@@ -15,7 +15,7 @@ const features = [
     description: "Visualize your entire product catalog in real-time. See stock levels, prices, and new additions at a glance.",
   },
   {
-    icon: <Zap className="h-8 w-8" />,
+    icon: <Store className="h-8 w-8" />,
     title: "AI-Powered Promo Copy",
     description: "Automatically generate compelling marketing copy for new or updated products, highlighting sales and key features.",
   },
@@ -31,7 +31,7 @@ const features = [
   },
   {
     icon: <Cpu className="h-8 w-8" />,
-    title: "Powered by Genkit",
+    title: "Powered by Gemini AI",
     description: "Leverages the latest in generative AI to provide cutting-edge features for your e-commerce business.",
   },
   {
@@ -52,8 +52,8 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex items-center">
-            <Zap className="h-6 w-6 mr-2 text-primary" />
-            <span className="font-bold">RetailFlow AI</span>
+            <Store className="h-6 w-6 mr-2 text-primary" />
+            <span className="font-bold">Retail Flash</span>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
              <Button variant="ghost" asChild>
@@ -101,7 +101,7 @@ export default function LandingPage() {
                     The AI Co-Pilot for Modern Retail
                 </motion.h1>
                 <motion.p variants={FADE_UP_ANIMATION_VARIANTS} className="max-w-2xl text-lg text-muted-foreground">
-                    Streamline your e-commerce operations with real-time AI. From inventory management to customer service, RetailFlow has you covered.
+                    Streamline your e-commerce operations with real-time AI. From inventory management to customer service, Retail Flash has you covered.
                 </motion.p>
                 <motion.div variants={FADE_UP_ANIMATION_VARIANTS}>
                     <Button asChild size="lg">
@@ -116,7 +116,7 @@ export default function LandingPage() {
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything you need. Nothing you don't.</h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        RetailFlow AI provides a suite of tools to help you manage and grow your business with the power of AI.
+                        Retail Flash provides a suite of tools to help you manage and grow your business with the power of AI.
                     </p>
                 </div>
                 <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,7 +147,7 @@ export default function LandingPage() {
       <footer className="border-t py-6 md:px-8 md:py-0">
           <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
             <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-                © 2025 RetailFlow AI. All rights reserved.
+                © 2025 Retail Flash. All rights reserved.
             </p>
           </div>
       </footer>

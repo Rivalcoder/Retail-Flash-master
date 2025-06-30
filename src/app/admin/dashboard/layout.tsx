@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import { Zap, LogOut, Crown, Menu, X } from "lucide-react";
+import { Store, LogOut, Crown, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
@@ -48,11 +48,11 @@ export default function AdminDashboardLayout({
             </Button>
             
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-              <Zap className="h-5 w-5 text-white" />
+              <Store className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                RetailFlow AI
+                Retail Flash
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</span>
             </div>

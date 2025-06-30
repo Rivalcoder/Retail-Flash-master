@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'RetailFlow AI',
-  description: 'Real-time AI assistant for retail/e-commerce.',
+  title: 'Retail Flash',
+  description: 'AI-powered retail platform with smart product recommendations and promotional tools.',
 };
 
 export default function RootLayout({
