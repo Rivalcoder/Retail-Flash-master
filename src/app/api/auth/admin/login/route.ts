@@ -12,6 +12,15 @@ export async function POST(request: NextRequest) {
   console.log('🔐 Admin login API called');
   
   try {
+    // Check if MONGO_URL is set
+    if (!process.env.MONGO_URL) {
+      console.error('❌ MONGO_URL environment variable is not set');
+      return NextResponse.json(
+        { error: 'Database configuration error' },
+        { status: 500 }
+      );
+    }
+    
     const body = await request.json();
     console.log('📝 Request body:', { email: body.email, password: '***' });
     
@@ -21,6 +30,17 @@ export async function POST(request: NextRequest) {
     console.log('🗄️ Connecting to admin database...');
     const AdminModel = await getAdminModel();
     console.log('✅ Admin model loaded');
+
+    // Verify connection is ready
+    const connection = AdminModel.db;
+    if (connection.readyState !== 1) {
+      console.error('❌ Database connection not ready. State:', connection.readyState);
+      return NextResponse.json(
+        { error: 'Database connection not ready' },
+        { status: 500 }
+      );
+    }
+    console.log('✅ Database connection verified');
 
     // Check if admin exists
     console.log('🔍 Checking if admin exists:', email);

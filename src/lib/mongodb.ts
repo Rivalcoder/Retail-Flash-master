@@ -30,7 +30,10 @@ if (!cached) {
 async function createConnection(databaseName: string) {
   const connectionString = `${MONGO_URL}/${databaseName}`;
   const opts = {
-    bufferCommands: false,
+    bufferCommands: true,
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
   };
   
   return mongoose.createConnection(connectionString, opts);

@@ -95,7 +95,7 @@ const AdminSchema: Schema = new Schema({
 });
 
 // Indexes for better query performance
-AdminSchema.index({ email: 1 });
+// Removed email index since unique: true already creates it
 AdminSchema.index({ role: 1 });
 AdminSchema.index({ isActive: 1 });
 AdminSchema.index({ department: 1 });
@@ -112,7 +112,14 @@ AdminSchema.set('toObject', { virtuals: true });
 // Create model with admin database connection
 async function getAdminModel() {
   const adminConnection = await adminDbConnect();
-  return adminConnection.models.Admin || adminConnection.model<IAdmin>('Admin', AdminSchema);
+  
+  // Check if model already exists
+  if (adminConnection.models.Admin) {
+    return adminConnection.models.Admin;
+  }
+  
+  // Create new model if it doesn't exist
+  return adminConnection.model<IAdmin>('Admin', AdminSchema);
 }
 
 export { getAdminModel };
