@@ -41,6 +41,96 @@ export type AnswerQuestionOutput = z.infer<typeof AnswerQuestionOutputSchema>;
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 console.log('API Key available:', !!apiKey);
 
+// Helper function to call local model
+async function callLocalModel(question: string, productsData: any, specificProduct: any): Promise<string | null> {
+  try {
+    const prompt = `You are a customer service chatbot for an e-commerce website. 
+You help customers by answering questions about specific products.
+Be concise, helpful, and professional in your responses.
+
+COMPLETE PRODUCT CATALOG DATA:
+${JSON.stringify(productsData, null, 2)}
+
+SPECIFIC PRODUCT CONTEXT:
+${specificProduct ? JSON.stringify(specificProduct, null, 2) : 'User asking general questions about the catalog'}
+
+Product Information Context:
+- You have access to the complete product catalog above
+- If user asks about a specific product, use the exact data from the catalog
+- If user asks about pricing, use the actual prices from the catalog
+- If user asks about availability, use the actual stock numbers
+- If user asks about features, use the actual features from the catalog
+- If user asks about specifications, use the actual specifications
+- Always maintain a friendly and professional tone
+
+# Response Guidelines:
+1). Format your response with proper markdown:
+   - Use ### for headers
+   - Use **bold** for emphasis
+   - Use *italic* for emphasis
+   - Use tables for structured data
+   - Use lists for multiple points
+   - Use blockquotes for important notes
+   - Use emojis for visual appeal
+   
+2). When answering about specific products:
+   - Use the exact product name from the catalog
+   - Use the exact price from the catalog (₹ symbol for INR)
+   - Use the exact stock numbers from the catalog
+   - Use the exact features from the catalog
+   - Use the exact specifications from the catalog
+   
+3). When comparing products:
+   - Use actual data from the catalog
+   - Create comparison tables with real data
+   - Highlight differences based on actual features
+   
+4). When answering general questions:
+   - Provide overview of the catalog
+   - Use actual data from multiple products
+   - Give accurate statistics from the catalog
+   
+Important Notes:
+- ALWAYS use tables for:
+  * Product listings with multiple attributes
+  * Price comparisons
+  * Feature comparisons
+  * Any data that has more than 2 columns
+- Always use ₹ symbol for INR amounts
+- Format large numbers with commas (e.g., ₹1,00,000)
+- Use K for thousands (e.g., ₹50K)
+- Include current date and time in IST timezone when relevant
+- Use bold for important metrics and totals
+- Keep responses concise but informative
+- Use appropriate emojis for visual hierarchy
+
+User Question: ${question}
+
+Please provide a helpful and detailed answer using the actual product data from the catalog above. If the user is asking about a specific product, use the exact data for that product. If asking for comparisons, use real data from multiple products.`;
+
+    const response = await fetch('http://localhost:8000/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        message: prompt
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.response;
+    }
+    
+    return null;
+  } catch (error) {
+    console.log('Local model call failed:', error);
+    return null;
+  }
+}
+
 export async function answerQuestion(input: AnswerQuestionInput): Promise<AnswerQuestionOutput> {
   // Validate input
   const validatedInput = AnswerQuestionInputSchema.parse(input);
@@ -76,7 +166,16 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
       specifications: product.specifications || {}
     }));
 
-    console.log('Attempting to generate AI response...');
+    // First, try local model
+    console.log('Attempting to call local model...');
+    const localResponse = await callLocalModel(validatedInput.question, productsData, specificProduct);
+    
+    if (localResponse) {
+      console.log('Successfully generated response from local model');
+      return { answer: localResponse };
+    }
+
+    console.log('Local model failed, falling back to Gemini...');
     const { object } = await generateObject({
       model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -175,11 +274,11 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
                Please provide a helpful and detailed answer using the actual product data from the catalog above. If the user is asking about a specific product, use the exact data for that product. If asking for comparisons, use real data from multiple products.`
     });
 
-    console.log('Successfully generated AI response');
+    console.log('Successfully generated AI response from Gemini');
     return object;
 
   } catch (error) {
-    console.error('Error calling Google AI API:', error);
+    console.error('Error calling AI API:', error);
     
     // Return a fallback response in case of API error
     return {

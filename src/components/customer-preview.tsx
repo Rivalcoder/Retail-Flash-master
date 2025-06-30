@@ -12,7 +12,7 @@ const demoCategories = [
   { name: 'Electronics', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80' },
   { name: 'Fashion', image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&q=80' },
   { name: 'Home', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=80' },
-  { name: 'Fitness', image: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=400&q=80' },
+  { name: 'Fitness', image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80' },
   { name: 'Toys', image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80' },
   { name: 'Beauty', image: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&q=80' },
 ];

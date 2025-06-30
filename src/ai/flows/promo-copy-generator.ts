@@ -36,10 +36,55 @@ console.log('API Key available:', !!apiKey);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 
+// Helper function to call local model for tagline generation
+async function callLocalModelForTagline(productData: any): Promise<string | null> {
+  try {
+    const requestId = Math.random().toString(36).substring(7);
+    
+    const response = await fetch('http://localhost:8000/generate-tagline', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        name: productData.name,
+        price: productData.price,
+        old_price: productData.oldPrice || null,
+        description: productData.description,
+        request_id: requestId
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.tagline) {
+        return data.tagline;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.log('Local model call failed:', error);
+    return null;
+  }
+}
+
 export async function generatePromoCopy(productData: any) {
   console.log('generatePromoCopy called with:', productData);
   
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  // First, try local model
+  console.log('Attempting to call local model for tagline...');
+  const localTagline = await callLocalModelForTagline(productData);
+  
+  if (localTagline) {
+    console.log('Successfully generated tagline from local model:', localTagline);
+    return localTagline;
+  }
+
+  // Fallback to Gemini if local model fails
+  console.log('Local model failed, falling back to Gemini...');
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `Generate ONE compelling promotional tagline for this product.
 
@@ -58,13 +103,13 @@ Example: "Smart lighting that saves you 40% - Transform your home today!"
 
 Tagline:`;
 
-  console.log('Sending prompt to AI:', prompt);
+  console.log('Sending prompt to Gemini:', prompt);
 
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const generatedText = response.text().trim();
-    console.log('AI generated text:', generatedText);
+    console.log('Gemini generated text:', generatedText);
     return generatedText;
   } catch (error: any) {
     console.error('Error generating promo copy:', error);
@@ -112,7 +157,7 @@ export async function generatePromoCopyVariations(
 
     console.log('Attempting to generate promotional copy variations...');
     const { object } = await generateObject({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-1.5-flash'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: z.object({
         variations: z.array(z.string()).describe('Array of promotional copy variations')
