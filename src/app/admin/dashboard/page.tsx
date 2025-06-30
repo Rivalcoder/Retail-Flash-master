@@ -2,20 +2,20 @@
 
 import { useState, useTransition, useEffect } from "react";
 import AdminPanel from "@/components/admin-panel";
-import Dashboard from "@/components/dashboard";
 import PromoGenerator from "@/components/promo-generator";
 import QAndABot from "@/components/q-and-a-bot";
+import CustomerPreview from "@/components/customer-preview";
 import { initialProducts } from "@/lib/mock-data";
 import type { Product } from "@/lib/types";
 import { getAdminData, isAdminLoggedIn, logoutAdmin, getAdminAuthHeaders } from "@/lib/auth-utils";
 import {
   Bot,
-  LayoutDashboard,
   Sparkles,
   Shield,
   User,
   LogOut,
   Package,
+  Eye,
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +26,7 @@ import InventoryPage from "@/components/inventory-page";
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [updatedIds, setUpdatedIds] = useState<string[]>([]);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState("inventory");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
@@ -300,10 +300,10 @@ export default function AdminDashboardPage() {
   };
 
   const navItems = [
-    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", color: "from-blue-500 to-indigo-600" },
     { id: "inventory", icon: Package, label: "Inventory", color: "from-green-500 to-emerald-600" },
     { id: "promo-generator", icon: Sparkles, label: "Promo", color: "from-purple-500 to-pink-600" },
     { id: "q-and-a-bot", icon: Bot, label: "Q&A Bot", color: "from-emerald-500 to-teal-600" },
+    { id: "customer-preview", icon: Eye, label: "Customer Preview", color: "from-amber-500 to-orange-600" },
     { id: "admin", icon: Shield, label: "Admin", color: "from-orange-500 to-red-600" },
   ];
   
@@ -363,9 +363,6 @@ export default function AdminDashboardPage() {
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full p-8 overflow-y-auto">
-          {activeSection === "dashboard" && (
-          <Dashboard products={products} updatedIds={updatedIds} />
-          )}
           {activeSection === "inventory" && (
             <div className="w-full max-w-none">
               <InventoryPage />
@@ -376,6 +373,11 @@ export default function AdminDashboardPage() {
           )}
           {activeSection === "q-and-a-bot" && (
           <QAndABot products={products} />
+          )}
+          {activeSection === "customer-preview" && (
+            <div className="w-full max-w-none">
+              <CustomerPreview products={products} />
+            </div>
           )}
           {activeSection === "admin" && (
           <div className="w-full max-w-none">
