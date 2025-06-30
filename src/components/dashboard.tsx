@@ -31,6 +31,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { generatePromoCopy } from "@/ai/flows/promo-copy-generator";
 
 interface DashboardProps {
   products: Product[];
@@ -54,6 +55,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(true);
+  const [hotDealPromos, setHotDealPromos] = useState<{ [id: string]: string }>({});
 
   const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
 
@@ -140,6 +142,24 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
     });
 
     setNotifications(newNotifications);
+  }, [products]);
+
+  useEffect(() => {
+    // For each low-stock product, generate a promo if not already present
+    const lowStockProducts = products.filter(p => p.stock !== undefined && p.stock <= 10 && p.stock > 0);
+    lowStockProducts.forEach(async (product) => {
+      if (!hotDealPromos[product._id || product.id || ""] && product.name && product.price) {
+        // Generate promo using AI
+        const promo = await generatePromoCopy({
+          name: product.name,
+          price: product.price,
+          oldPrice: product.oldPrice || product.price,
+          description: product.description || ""
+        });
+        setHotDealPromos(prev => ({ ...prev, [product._id || product.id || ""]: promo }));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
 
   const toggleFavorite = (productId: string) => {
@@ -289,7 +309,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
             )}
             {/* Wishlist Icon */}
             <button
-                        onClick={() => toggleFavorite(product._id || product.id)}
+              onClick={() => toggleFavorite(product._id || product.id)}
               className="absolute top-4 right-4 z-10 bg-white/80 dark:bg-gray-800/80 rounded-full p-2 shadow hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors"
               title={favorites.has(product._id || product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
             >
@@ -306,28 +326,84 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
             </div>
             {/* Product Info */}
             <div className="flex-1 flex flex-col p-5 gap-2">
-                    <div className="flex items-center justify-between">
-                <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700">{product.category}</Badge>
-                      <div className="flex items-center text-yellow-500">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-3 w-3 fill-current" />
-                        ))}
-                      </div>
+              {/* Product Status Badge - show only the most relevant */}
+              {(() => {
+                // Priority: Flash Sale > Hot Deal > Price Drop > New Arrival > Selling Fast
+                const isFlashSale = product.oldPrice && product.price < product.oldPrice && product.stock && product.stock <= 10;
+                const isHotDeal = product.stock !== undefined && product.stock <= 10 && product.stock > 0;
+                const isPriceDrop = product.oldPrice && product.price < product.oldPrice;
+                const isNew = product.isNew;
+                const isSellingFast = product.stock !== undefined && product.stock <= 5 && !isHotDeal;
+                if (isFlashSale) {
+                  return (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-pink-500 text-white rounded-full text-xs font-semibold shadow">
+                        <Zap className="h-4 w-4 text-white" />
+                        Flash Sale! Limited Time
+                      </span>
                     </div>
+                  );
+                } else if (isHotDeal) {
+                  return (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-red-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
+                        <Flame className="h-4 w-4 text-white" />
+                        Hot Deal! Only {product.stock} left!
+                      </span>
+                    </div>
+                  );
+                } else if (isPriceDrop) {
+                  return (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-xs font-semibold shadow">
+                        <TrendingDown className="h-4 w-4 text-white" />
+                        {hotDealPromos[product._id || product.id || ""] || "Price Drop!"}
+                      </span>
+                    </div>
+                  );
+                } else if (isNew) {
+                  return (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-500 to-blue-400 text-white rounded-full text-xs font-semibold shadow">
+                        <Star className="h-4 w-4 text-white" />
+                        New Arrival
+                      </span>
+                    </div>
+                  );
+                } else if (isSellingFast) {
+                  return (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-orange-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
+                        <AlertTriangle className="h-4 w-4 text-white" />
+                        Selling Fast! Only {product.stock} left!
+                      </span>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700">{product.category}</Badge>
+                <div className="flex items-center text-yellow-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-3 w-3 fill-current" />
+                  ))}
+                </div>
+              </div>
               <CardTitle className="text-lg font-bold leading-tight group-hover:text-blue-700 transition-colors">{product.name}</CardTitle>
-                    {product.tagline && (
+              {product.tagline && (
                 <p className="text-xs text-blue-600 dark:text-blue-200 font-medium italic">{product.tagline}</p>
               )}
               <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{product.description}</p>
               <div className="flex items-end gap-2 mt-2">
                 <span className="text-xl font-bold text-blue-700">₹{product.price.toLocaleString()}</span>
-                      {product.oldPrice && (
+                {product.oldPrice && (
                   <span className="text-sm text-gray-400 line-through">₹{product.oldPrice.toLocaleString()}</span>
-                      )}
-                    </div>
+                )}
+              </div>
               <Button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Add to Cart <ShoppingCart className="ml-2 h-4 w-4" /></Button>
-                </div>
-            </motion.div>
+            </div>
+          </motion.div>
           ))}
         </motion.div>
     </div>
