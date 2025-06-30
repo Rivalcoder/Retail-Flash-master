@@ -197,7 +197,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
           {/* File Upload Card */}
           <Card className="border-2 border-dashed border-blue-200 hover:border-blue-300 transition-colors">
             <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <FileText className="h-8 w-8 text-blue-600" />
               </div>
               <CardTitle className="text-2xl font-bold">Upload Product Catalog</CardTitle>
@@ -304,7 +304,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
           {/* Manual Entry Card */}
           <Card className="border-2 border-dashed border-green-200 hover:border-green-300 transition-colors">
             <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-bounce p-5">
                 <PenTool className="h-8 w-8 text-green-600" />
               </div>
               <CardTitle className="text-2xl font-bold">Manual Product Entry</CardTitle>
