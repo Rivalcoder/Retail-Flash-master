@@ -6,7 +6,7 @@
     "description": "Premium wireless headphones with active noise cancellation and 30-hour battery life. Features premium audio drivers, comfortable memory foam ear cushions, and seamless Bluetooth 5.0 connectivity. Perfect for music lovers, professionals, and travelers.",
     "category": "Electronics",
     "stock": 150,
-    "imageUrl": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400",
     "tags": ["wireless", "bluetooth", "noise-cancellation", "premium", "audio"],
     "specifications": {
       "batteryLife": "30 hours",
@@ -25,7 +25,7 @@
     "description": "Advanced fitness tracking smartwatch with heart rate monitor, GPS, and water resistance. Features a bright AMOLED display, 7-day battery life, and comprehensive health metrics tracking. Perfect for athletes and health-conscious individuals.",
     "category": "Fitness",
     "stock": 75,
-    "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=400",
     "tags": ["fitness", "smartwatch", "health", "tracking", "gps"],
     "specifications": {
       "display": "1.4 inch AMOLED",
@@ -43,7 +43,7 @@
     "description": "Comfortable and sustainable organic cotton t-shirt made from 100% certified organic cotton. Available in multiple colors and sizes. Features a classic fit, reinforced stitching, and eco-friendly production process. Perfect for everyday wear.",
     "category": "Clothing",
     "stock": 300,
-    "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400",
     "tags": ["organic", "cotton", "sustainable", "comfortable", "casual"],
     "specifications": {
       "material": "100% Organic Cotton",
@@ -61,7 +61,7 @@
     "description": "Premium insulated stainless steel water bottle with double-wall vacuum insulation. Keeps drinks cold for 24 hours or hot for 12 hours. Features a leak-proof design, BPA-free construction, and wide mouth for easy cleaning.",
     "category": "Home & Kitchen",
     "stock": 200,
-    "imageUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1464983953574-0892a716854b?w=400",
     "tags": ["insulated", "stainless-steel", "eco-friendly", "bpa-free", "leak-proof"],
     "specifications": {
       "capacity": "32 oz (946ml)",
@@ -80,7 +80,7 @@
     "description": "Fast wireless charging pad compatible with all Qi-enabled devices. Features 15W fast charging, LED indicator lights, and non-slip silicone surface. Includes overcharge protection and temperature control for safe charging.",
     "category": "Electronics",
     "stock": 120,
-    "imageUrl": "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
     "tags": ["wireless-charging", "qi-compatible", "fast-charging", "smartphone"],
     "specifications": {
       "powerOutput": "15W",
@@ -98,7 +98,7 @@
     "description": "High-quality yoga mat made from eco-friendly TPE material. Features excellent grip, cushioning, and durability. Perfect for yoga, pilates, and fitness activities. Includes carrying strap and is available in multiple colors.",
     "category": "Fitness",
     "stock": 180,
-    "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400",
     "tags": ["yoga", "fitness", "eco-friendly", "non-slip", "cushioned"],
     "specifications": {
       "material": "TPE (Thermoplastic Elastomer)",
@@ -116,7 +116,7 @@
     "description": "WiFi-enabled smart LED light bulb with 16 million colors and voice control. Compatible with Alexa, Google Assistant, and Apple HomeKit. Features scheduling, dimming, and energy-efficient operation. Perfect for smart home automation.",
     "category": "Home & Kitchen",
     "stock": 250,
-    "imageUrl": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400",
     "tags": ["smart-home", "led", "wifi", "voice-control", "energy-efficient"],
     "specifications": {
       "brightness": "800 lumens",
@@ -135,7 +135,7 @@
     "description": "Waterproof portable Bluetooth speaker with 360-degree sound and 20-hour battery life. Features built-in microphone for calls, rugged design for outdoor use, and wireless stereo pairing. Perfect for parties, outdoor activities, and travel.",
     "category": "Electronics",
     "stock": 90,
-    "imageUrl": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
+    "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400",
     "tags": ["portable", "bluetooth", "waterproof", "outdoor", "stereo"],
     "specifications": {
       "batteryLife": "20 hours",
@@ -146,5 +146,127 @@
       "dimensions": "18cm x 7cm",
       "features": ["360° Sound", "Stereo Pairing", "Built-in Mic"]
     }
+  },
+  {
+    "id": "prod_009",
+    "name": "Ergonomic Office Chair",
+    "price": 249.99,
+    "description": "Adjustable ergonomic office chair with lumbar support, breathable mesh back, and padded seat. Features adjustable armrests, tilt mechanism, and smooth-rolling casters. Ideal for home and office use.",
+    "category": "Furniture",
+    "stock": 60,
+    "imageUrl": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400",
+    "tags": ["ergonomic", "office", "chair", "adjustable", "mesh"],
+    "specifications": {
+      "material": "Mesh, Foam, Steel",
+      "adjustable": ["Height", "Armrests", "Tilt"],
+      "weightCapacity": "120kg",
+      "color": "Black",
+      "dimensions": "120cm x 65cm x 65cm"
+    }
+  },
+  {
+    "id": "prod_010",
+    "name": "4K Ultra HD Smart TV",
+    "price": 599.99,
+    "description": "55-inch 4K Ultra HD Smart TV with HDR, built-in streaming apps, and voice remote. Features ultra-thin bezels, Dolby Vision, and multiple HDMI ports. Perfect for home entertainment.",
+    "category": "Electronics",
+    "stock": 40,
+    "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400",
+    "tags": ["4k", "smart-tv", "hdr", "entertainment", "dolby-vision"],
+    "specifications": {
+      "screenSize": "55 inches",
+      "resolution": "3840x2160",
+      "smartFeatures": ["Streaming Apps", "Voice Control"],
+      "ports": ["HDMI", "USB", "Ethernet"],
+      "weight": "14kg"
+    }
+  },
+  {
+    "id": "prod_011",
+    "name": "Stainless Steel Cookware Set",
+    "price": 129.99,
+    "description": "10-piece stainless steel cookware set with non-stick coating, glass lids, and ergonomic handles. Suitable for all stovetops including induction. Dishwasher safe.",
+    "category": "Home & Kitchen",
+    "stock": 85,
+    "imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
+    "tags": ["cookware", "stainless-steel", "kitchen", "non-stick", "set"],
+    "specifications": {
+      "pieces": 10,
+      "material": "Stainless Steel",
+      "coating": "Non-stick",
+      "compatibility": ["Induction", "Gas", "Electric"],
+      "dishwasherSafe": true
+    }
+  },
+  {
+    "id": "prod_012",
+    "name": "Noise Cancelling Earbuds",
+    "price": 129.99,
+    "description": "True wireless earbuds with active noise cancellation, touch controls, and wireless charging case. Up to 8 hours playtime per charge. Sweat and water resistant.",
+    "category": "Electronics",
+    "stock": 110,
+    "imageUrl": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
+    "tags": ["earbuds", "wireless", "noise-cancelling", "bluetooth", "audio"],
+    "specifications": {
+      "batteryLife": "8 hours",
+      "chargingCase": "Wireless",
+      "waterResistance": "IPX5",
+      "controls": "Touch",
+      "color": "White"
+    }
+  },
+  {
+    "id": "sample_001",
+    "name": "Premium Wireless Headphones",
+    "price": 199.99,
+    "description": "High-quality wireless headphones with noise cancellation",
+    "category": "Electronics",
+    "stock": 50,
+    "imageUrl": "https://example.com/headphones.jpg"
+  },
+  {
+    "id": "sample_002",
+    "name": "Smart LED Desk Lamp",
+    "price": 49.99,
+    "description": "Adjustable LED desk lamp with smart touch controls and USB charging port",
+    "category": "Home & Office",
+    "stock": 120,
+    "imageUrl": "https://example.com/desk-lamp.jpg"
+  },
+  {
+    "id": "sample_003",
+    "name": "Men's Classic Leather Wallet",
+    "price": 29.95,
+    "description": "Genuine leather wallet with RFID blocking technology",
+    "category": "Fashion",
+    "stock": 200,
+    "imageUrl": "https://example.com/leather-wallet.jpg"
+  },
+  {
+    "id": "sample_004",
+    "name": "Stainless Steel Insulated Water Bottle",
+    "price": 24.99,
+    "description": "Keeps drinks cold for 24 hours and hot for 12 hours, 500ml capacity",
+    "category": "Outdoors",
+    "stock": 80,
+    "imageUrl": "https://example.com/water-bottle.jpg"
+  },
+  {
+    "id": "sample_005",
+    "name": "Bluetooth Portable Speaker",
+    "price": 59.99,
+    "description": "Compact wireless speaker with deep bass and 12-hour playtime",
+    "category": "Electronics",
+    "stock": 75,
+    "imageUrl": "https://example.com/portable-speaker.jpg"
+  },
+  {
+    "id": "sample_006",
+    "name": "Children's Building Blocks Set",
+    "price": 34.99,
+    "description": "Creative 150-piece building blocks set for kids aged 3+",
+    "category": "Toys",
+    "stock": 60,
+    "imageUrl": "https://example.com/building-blocks.jpg"
   }
 ] 

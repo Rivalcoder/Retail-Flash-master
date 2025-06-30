@@ -208,7 +208,88 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "High-quality wireless headphones with noise cancellation",
         category: "Electronics",
         stock: 50,
-        imageUrl: "https://example.com/headphones.jpg"
+        imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_002",
+        name: "Smart LED Desk Lamp",
+        price: 49.99,
+        description: "Adjustable LED desk lamp with smart touch controls and USB charging port",
+        category: "Home & Office",
+        stock: 120,
+        imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_003",
+        name: "Men's Classic Leather Wallet",
+        price: 29.95,
+        description: "Genuine leather wallet with RFID blocking technology",
+        category: "Fashion",
+        stock: 200,
+        imageUrl: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_004",
+        name: "Stainless Steel Insulated Water Bottle",
+        price: 24.99,
+        description: "Keeps drinks cold for 24 hours and hot for 12 hours, 500ml capacity",
+        category: "Outdoors",
+        stock: 80,
+        imageUrl: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_005",
+        name: "Bluetooth Portable Speaker",
+        price: 59.99,
+        description: "Compact wireless speaker with deep bass and 12-hour playtime",
+        category: "Electronics",
+        stock: 75,
+        imageUrl: "https://images.unsplash.com/photo-1512446733611-9099a758e082?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_006",
+        name: "Children's Building Blocks Set",
+        price: 34.99,
+        description: "Creative 150-piece building blocks set for kids aged 3+",
+        category: "Toys",
+        stock: 60,
+        imageUrl: "https://images.unsplash.com/photo-1511453673005-6b8cfc5e8a81?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_007",
+        name: "Ergonomic Office Chair",
+        price: 189.99,
+        description: "Adjustable office chair with lumbar support and breathable mesh back.",
+        category: "Home & Office",
+        stock: 40,
+        imageUrl: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_008",
+        name: "Stainless Steel Cookware Set",
+        price: 129.99,
+        description: "10-piece premium stainless steel cookware set for all cooktops.",
+        category: "Kitchen",
+        stock: 55,
+        imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_009",
+        name: "Yoga Mat with Carrying Strap",
+        price: 39.99,
+        description: "Non-slip yoga mat with extra cushioning and carrying strap included.",
+        category: "Fitness",
+        stock: 100,
+        imageUrl: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "sample_010",
+        name: "Wireless Gaming Mouse",
+        price: 69.99,
+        description: "High-precision wireless gaming mouse with customizable buttons.",
+        category: "Electronics",
+        stock: 90,
+        imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80"
       }
     ];
 
