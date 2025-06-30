@@ -8,6 +8,20 @@ const AdminLoginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+// Helper function to wait for database connection
+async function waitForConnection(AdminModel: any, maxRetries = 3, delay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    const connection = AdminModel.db;
+    if (connection.readyState === 1) {
+      return true;
+    }
+    
+    console.log(`⏳ Waiting for database connection... Attempt ${i + 1}/${maxRetries}`);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   console.log('🔐 Admin login API called');
   
@@ -31,13 +45,13 @@ export async function POST(request: NextRequest) {
     const AdminModel = await getAdminModel();
     console.log('✅ Admin model loaded');
 
-    // Verify connection is ready
-    const connection = AdminModel.db;
-    if (connection.readyState !== 1) {
-      console.error('❌ Database connection not ready. State:', connection.readyState);
+    // Wait for connection to be ready with retry logic
+    const isConnected = await waitForConnection(AdminModel);
+    if (!isConnected) {
+      console.error('❌ Database connection failed after retries');
       return NextResponse.json(
-        { error: 'Database connection not ready' },
-        { status: 500 }
+        { error: 'Database connection timeout. Please try again.' },
+        { status: 503 }
       );
     }
     console.log('✅ Database connection verified');
@@ -122,6 +136,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid input data', details: error.errors },
         { status: 400 }
+      );
+    }
+
+    // Handle database connection errors specifically
+    if (error instanceof Error && error.message.includes('connection')) {
+      return NextResponse.json(
+        { error: 'Database connection error. Please try again in a moment.' },
+        { status: 503 }
       );
     }
 

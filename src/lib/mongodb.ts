@@ -30,18 +30,38 @@ if (!cached) {
 async function createConnection(databaseName: string) {
   const connectionString = `${MONGO_URL}/${databaseName}`;
   const opts = {
-    bufferCommands: true,
+    bufferCommands: false, // Disable buffering to ensure immediate connection
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000, // Increased timeout
     socketTimeoutMS: 45000,
+    connectTimeoutMS: 10000, // Added connection timeout
   };
   
-  return mongoose.createConnection(connectionString, opts);
+  const connection = mongoose.createConnection(connectionString, opts);
+  
+  // Wait for connection to be ready
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`Connection timeout for ${databaseName}`));
+    }, 10000);
+    
+    connection.once('connected', () => {
+      clearTimeout(timeout);
+      resolve(connection);
+    });
+    
+    connection.once('error', (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
+  });
+  
+  return connection;
 }
 
 // Admin database connection
 async function adminDbConnect() {
-  if (cached.adminConn) {
+  if (cached.adminConn && cached.adminConn.readyState === 1) {
     return cached.adminConn;
   }
 
@@ -51,8 +71,10 @@ async function adminDbConnect() {
   
   try {
     cached.adminConn = await cached.adminPromise;
+    console.log('✅ Admin database connected successfully');
   } catch (e) {
     cached.adminPromise = null;
+    console.error('❌ Admin database connection failed:', e);
     throw e;
   }
 
@@ -61,7 +83,7 @@ async function adminDbConnect() {
 
 // User database connection
 async function userDbConnect() {
-  if (cached.userConn) {
+  if (cached.userConn && cached.userConn.readyState === 1) {
     return cached.userConn;
   }
 
@@ -71,8 +93,10 @@ async function userDbConnect() {
   
   try {
     cached.userConn = await cached.userPromise;
+    console.log('✅ User database connected successfully');
   } catch (e) {
     cached.userPromise = null;
+    console.error('❌ User database connection failed:', e);
     throw e;
   }
 
@@ -81,7 +105,7 @@ async function userDbConnect() {
 
 // Product database connection
 async function productDbConnect() {
-  if (cached.productConn) {
+  if (cached.productConn && cached.productConn.readyState === 1) {
     return cached.productConn;
   }
 
@@ -91,8 +115,10 @@ async function productDbConnect() {
   
   try {
     cached.productConn = await cached.productPromise;
+    console.log('✅ Product database connected successfully');
   } catch (e) {
     cached.productPromise = null;
+    console.error('❌ Product database connection failed:', e);
     throw e;
   }
 
