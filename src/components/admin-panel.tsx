@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, UploadCloud, Download, FileText, AlertCircle, CheckCircle, Plus, X, Database, PenTool, Sparkles } from "lucide-react";
+import { Loader2, UploadCloud, Download, FileText, AlertCircle, CheckCircle, Plus, X, Database, PenTool, Sparkles, Upload, Link } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 
 interface AdminPanelProps {
   onUpdate: (file: File) => void;
@@ -32,6 +33,12 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState("upload");
   const [manualProducts, setManualProducts] = useState<ProductFormData[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  
+  // Image upload states
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initialProductForm: ProductFormData = {
     id: '',
@@ -72,6 +79,90 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
     }
   };
 
+  const handleImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const imageFile = event.target.files[0];
+      
+      if (!imageFile.type.startsWith('image/')) {
+        toast({
+          variant: "destructive",
+          title: "Invalid File Type",
+          description: "Please upload a valid image file.",
+        });
+        return;
+      }
+
+      // Simulate upload progress
+      setIsUploading(true);
+      setUploadProgress(0);
+      
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setIsUploading(false);
+            
+            // Create object URL for preview
+            const imageUrl = URL.createObjectURL(imageFile);
+            setCurrentProduct(prev => ({
+              ...prev,
+              imageUrl: imageUrl
+            }));
+            
+            toast({
+              title: "Image Uploaded",
+              description: "Image has been uploaded successfully.",
+            });
+            
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 100);
+    }
+  };
+
+  const handleUrlSubmit = (url: string) => {
+    if (url.trim()) {
+      if (isValidUrl(url)) {
+        setCurrentProduct(prev => ({
+          ...prev,
+          imageUrl: url.trim()
+        }));
+        setShowUrlInput(false);
+        toast({
+          title: "Image URL Added",
+          description: "Image URL has been added successfully.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Invalid URL",
+          description: "Please enter a valid image URL.",
+        });
+      }
+    }
+  };
+
+  const isValidUrl = (string: string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const removeImage = () => {
+    if (currentProduct.imageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(currentProduct.imageUrl);
+    }
+    setCurrentProduct(prev => ({
+      ...prev,
+      imageUrl: ''
+    }));
+  };
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -86,7 +177,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile.type === "application/json") {
@@ -120,7 +211,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         imageUrl: "https://example.com/headphones.jpg"
       }
     ];
-    
+
     const blob = new Blob([JSON.stringify(sampleData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -160,6 +251,12 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
     };
 
     setManualProducts(prev => [...prev, productWithId]);
+    
+    // Clean up any blob URLs before resetting
+    if (currentProduct.imageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(currentProduct.imageUrl);
+    }
+    
     setCurrentProduct(initialProductForm);
     toast({
       title: "Product Added",
@@ -168,6 +265,10 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
   };
 
   const removeManualProduct = (index: number) => {
+    const productToRemove = manualProducts[index];
+    if (productToRemove.imageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(productToRemove.imageUrl);
+    }
     setManualProducts(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -192,6 +293,14 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
     const file = new File([blob], 'manual-products.json', { type: 'application/json' });
 
     onUpdate(file);
+    
+    // Clean up blob URLs
+    manualProducts.forEach(product => {
+      if (product.imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(product.imageUrl);
+      }
+    });
+    
     setManualProducts([]);
   };
 
@@ -226,7 +335,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="upload" className="space-y-6">
+          <TabsContent value="upload" className="space-y-6 p-5">
             {/* File Upload Card */}
             <Card className="border-2 border-dashed border-blue-200 hover:border-blue-300 transition-colors">
               <CardHeader className="text-center">
@@ -246,11 +355,10 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                       Product Catalog JSON File
                     </Label>
                     <div
-                      className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
-                        dragActive
+                      className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${dragActive
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                           : 'border-slate-300 dark:border-slate-600 hover:border-blue-400'
-                      }`}
+                        }`}
                       onDragEnter={handleDrag}
                       onDragLeave={handleDrag}
                       onDragOver={handleDrag}
@@ -277,7 +385,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         {fileName && (
@@ -364,7 +472,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="manual" className="space-y-6">
+          <TabsContent value="manual" className="space-y-6 p-5">
             {/* Manual Entry Card */}
             <Card className="border-2 border-dashed border-green-200 hover:border-green-300 transition-colors">
               <CardHeader className="text-center">
@@ -436,14 +544,105 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                       placeholder="e.g., 100"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="product-image">Image URL</Label>
-                    <Input
-                      id="product-image"
-                      value={currentProduct.imageUrl}
-                      onChange={(e) => handleManualInputChange('imageUrl', e.target.value)}
-                      placeholder="https://example.com/image.jpg"
-                    />
+                  <div className="space-y-4">
+                    <Label>Product Image</Label>
+                    
+                    {/* Image Preview */}
+                    {currentProduct.imageUrl && (
+                      <div className="relative group">
+                        <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                          <img
+                            src={currentProduct.imageUrl}
+                            alt="Preview"
+                            className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800"
+                          />
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={removeImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Upload Progress */}
+                    {isUploading && (
+                      <div className="space-y-2">
+                        <Progress value={uploadProgress} className="h-2" />
+                        <p className="text-sm text-muted-foreground">
+                          Uploading... {uploadProgress}%
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Upload Options */}
+                    {!currentProduct.imageUrl && (
+                      <div className="space-y-4">
+                        <div className="flex gap-3">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1 gap-2"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                            Upload Image
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1 gap-2"
+                            onClick={() => setShowUrlInput(!showUrlInput)}
+                            disabled={isUploading}
+                          >
+                            <Link className="h-4 w-4" />
+                            Paste URL
+                          </Button>
+                        </div>
+
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleImageFileChange}
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isUploading}
+                        />
+
+                        {showUrlInput && (
+                          <div className="space-y-2">
+                            <Label htmlFor="image-url">Image URL</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="image-url"
+                                type="url"
+                                placeholder="https://example.com/image.jpg"
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    handleUrlSubmit(e.currentTarget.value);
+                                  }
+                                }}
+                                className="flex-1"
+                              />
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  const input = document.getElementById("image-url") as HTMLInputElement;
+                                  handleUrlSubmit(input.value);
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="product-description">Description</Label>
