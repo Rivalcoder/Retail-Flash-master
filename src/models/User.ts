@@ -78,7 +78,7 @@ const UserSchema: Schema = new Schema({
 });
 
 // Index for better query performance
-UserSchema.index({ email: 1 });
+// Removed email index since unique: true already creates it
 UserSchema.index({ role: 1 });
 UserSchema.index({ isActive: 1 });
 

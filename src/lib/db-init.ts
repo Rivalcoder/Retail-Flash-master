@@ -222,7 +222,4 @@ async function initializeProductDatabase() {
     console.error('❌ Product database initialization failed:', error);
     throw error;
   }
-}
-
-// Export for manual initialization
-export { initializeDatabases }; 
+} 
