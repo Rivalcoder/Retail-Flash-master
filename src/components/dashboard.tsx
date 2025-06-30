@@ -31,7 +31,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import { generatePromoCopy } from "@/ai/flows/promo-copy-generator";
 
 interface DashboardProps {
   products: Product[];
@@ -55,7 +54,6 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(true);
-  const [hotDealPromos, setHotDealPromos] = useState<{ [id: string]: string }>({});
 
   const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
 
@@ -142,24 +140,6 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
     });
 
     setNotifications(newNotifications);
-  }, [products]);
-
-  useEffect(() => {
-    // For each low-stock product, generate a promo if not already present
-    const lowStockProducts = products.filter(p => p.stock !== undefined && p.stock <= 10 && p.stock > 0);
-    lowStockProducts.forEach(async (product) => {
-      if (!hotDealPromos[product._id || product.id || ""] && product.name && product.price) {
-        // Generate promo using AI
-        const promo = await generatePromoCopy({
-          name: product.name,
-          price: product.price,
-          oldPrice: product.oldPrice || product.price,
-          description: product.description || ""
-        });
-        setHotDealPromos(prev => ({ ...prev, [product._id || product.id || ""]: promo }));
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
 
   const toggleFavorite = (productId: string) => {
@@ -357,7 +337,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
                     <div className="mb-2 flex items-center justify-center">
                       <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-xs font-semibold shadow">
                         <TrendingDown className="h-4 w-4 text-white" />
-                        {hotDealPromos[product._id || product.id || ""] || "Price Drop!"}
+                        Price Drop!
                       </span>
                     </div>
                   );

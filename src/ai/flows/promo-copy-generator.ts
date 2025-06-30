@@ -13,6 +13,10 @@ import { generateObject } from 'ai';
 import { z } from 'zod';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+// Simple in-memory cache to reduce API calls
+const promoCache = new Map<string, { copy: string; timestamp: number }>();
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 const GeneratePromoCopyInputSchema = z.object({
   productName: z.string().describe('The name of the product.'),
   oldPrice: z.number().describe('The previous price of the product.'),
@@ -35,7 +39,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 export async function generatePromoCopy(productData: any) {
   console.log('generatePromoCopy called with:', productData);
   
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
   const prompt = `Generate ONE compelling promotional tagline for this product.
 
@@ -62,10 +66,35 @@ Tagline:`;
     const generatedText = response.text().trim();
     console.log('AI generated text:', generatedText);
     return generatedText;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating promo copy:', error);
+    
+    // Check if it's a quota error
+    if (error.message && error.message.includes('429') || error.message.includes('quota')) {
+      console.log('Quota exceeded, using fallback copy');
+      return generateFallbackCopy(productData);
+    }
+    
     return 'Discover amazing deals on premium products!';
   }
+}
+
+// Helper function to generate fallback copy when API quota is exceeded
+function generateFallbackCopy(productData: any): string {
+  const { name, price, oldPrice, description } = productData;
+  const isOnSale = oldPrice && oldPrice > price;
+  const discount = isOnSale ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  
+  const fallbackOptions = [
+    `${name} - ${isOnSale ? `${discount}% OFF!` : 'Amazing Value!'}`,
+    `Get ${name} for just $${price}!`,
+    `${name} - ${isOnSale ? 'Limited Time Deal!' : 'Premium Quality!'}`,
+    `Transform your space with ${name}!`,
+    `${name} - ${isOnSale ? 'Save big today!' : 'Exceptional value!'}`
+  ];
+  
+  // Return a random fallback option
+  return fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)];
 }
 
 // Optional: Helper function to generate multiple promo copy variations
@@ -130,7 +159,7 @@ export async function analyzePromoCopy(promoCopy: string): Promise<{
 
     console.log('Attempting to analyze promotional copy...');
     const { object } = await generateObject({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: z.object({
         score: z.number().describe('Effectiveness score from 1-10'),
