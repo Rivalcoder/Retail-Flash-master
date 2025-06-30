@@ -73,7 +73,9 @@ export default function QAndABot({ products }: QAndABotProps) {
       const response = await answerQuestion({
         productId: selectedProductId === "general" ? "general" : selectedProductId,
         question: input,
+        products: products,
       });
+      
       const botMessage: Message = { 
         sender: "bot", 
         text: response.answer,
@@ -179,8 +181,70 @@ export default function QAndABot({ products }: QAndABotProps) {
                             : "bg-slate-100 dark:bg-slate-800 border"
                         )}
                       >
-                        <div className="whitespace-pre-wrap text-sm">
-                          {message.text}
+                        <div className="whitespace-pre-wrap text-sm prose prose-sm max-w-none dark:prose-invert">
+                          {message.sender === "bot" ? (
+                            <div dangerouslySetInnerHTML={{ 
+                              __html: (() => {
+                                let text = message.text;
+                                
+                                // Handle headers
+                                text = text.replace(/### (.*)/g, '<h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">$1</h3>');
+                                text = text.replace(/## (.*)/g, '<h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">$1</h2>');
+                                
+                                // Handle bold and italic
+                                text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+                                text = text.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+                                
+                                // Handle code
+                                text = text.replace(/`(.*?)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
+                                
+                                // Handle blockquotes
+                                text = text.replace(/> (.*)/g, '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 my-2">$1</blockquote>');
+                                
+                                // Handle tables - find table blocks and convert them
+                                text = text.replace(/(\|.*\|[\s\S]*?)(?=\n\n|\n[^|]|$)/g, (match) => {
+                                  const lines = match.trim().split('\n').filter(line => line.trim());
+                                  if (lines.length < 2) return match;
+                                  
+                                  let tableHtml = '<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600">';
+                                  
+                                  lines.forEach((line, index) => {
+                                    const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+                                    if (cells.length === 0) return;
+                                    
+                                    if (index === 0) {
+                                      // Header row
+                                      tableHtml += '<thead><tr>';
+                                      cells.forEach(cell => {
+                                        tableHtml += `<th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-semibold bg-gray-100 dark:bg-gray-800 text-left">${cell}</th>`;
+                                      });
+                                      tableHtml += '</tr></thead><tbody>';
+                                    } else if (line.includes('---')) {
+                                      // Skip separator row
+                                      return;
+                                    } else {
+                                      // Data row
+                                      tableHtml += '<tr>';
+                                      cells.forEach(cell => {
+                                        tableHtml += `<td class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm">${cell}</td>`;
+                                      });
+                                      tableHtml += '</tr>';
+                                    }
+                                  });
+                                  
+                                  tableHtml += '</tbody></table></div>';
+                                  return tableHtml;
+                                });
+                                
+                                // Handle line breaks
+                                text = text.replace(/\n/g, '<br>');
+                                
+                                return text;
+                              })()
+                            }} />
+                          ) : (
+                            message.text
+                          )}
                         </div>
                         <div className={cn(
                           "text-xs mt-2",

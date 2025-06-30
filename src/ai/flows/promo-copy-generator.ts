@@ -8,7 +8,8 @@
  * - GeneratePromoCopyOutput - The return type for the generatePromoCopy function.
  */
 
-import { groq } from '@/ai/genkit';
+import { google } from '@ai-sdk/google';
+import { generateObject } from 'ai';
 import { z } from 'zod';
 
 const GeneratePromoCopyInputSchema = z.object({
@@ -20,9 +21,13 @@ const GeneratePromoCopyInputSchema = z.object({
 export type GeneratePromoCopyInput = z.infer<typeof GeneratePromoCopyInputSchema>;
 
 const GeneratePromoCopyOutputSchema = z.object({
-  promoCopy: z.string().describe('The generated promotional copy for the product.'),
+  promoCopy: z.string().describe('The generated promotional copy with proper formatting'),
 });
 export type GeneratePromoCopyOutput = z.infer<typeof GeneratePromoCopyOutputSchema>;
+
+// Use the API key directly
+const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+console.log('API Key available:', !!apiKey);
 
 export async function generatePromoCopy(input: GeneratePromoCopyInput): Promise<GeneratePromoCopyOutput> {
   // Validate input
@@ -31,17 +36,23 @@ export async function generatePromoCopy(input: GeneratePromoCopyInput): Promise<
   console.log('Generating promo copy for:', validatedInput); // Debug logging
   
   try {
+    // Check if API key is available
+    if (!apiKey) {
+      throw new Error('Google Generative AI API key is not configured');
+    }
+
     // Calculate discount percentage and savings
     const priceChange = validatedInput.oldPrice - validatedInput.newPrice;
     const discountPercentage = Math.round((priceChange / validatedInput.oldPrice) * 100);
     const isOnSale = priceChange > 0;
     const isPriceIncrease = priceChange < 0;
-    
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert marketing copywriter specializing in creating compelling promotional copy for e-commerce products. Your goal is to write engaging, persuasive copy that drives sales and highlights key product benefits.
+
+    console.log('Attempting to generate promotional copy...');
+    const { object } = await generateObject({
+      model: google('gemini-2.0-flash-exp'),
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      schema: GeneratePromoCopyOutputSchema,
+      prompt: `You are an expert marketing copywriter specializing in creating compelling promotional copy for e-commerce products. Your goal is to write engaging, persuasive copy that drives sales and highlights key product benefits.
 
 Key Guidelines:
 - Keep copy concise but compelling (2-4 sentences max)
@@ -52,16 +63,119 @@ Key Guidelines:
 - Match the tone to the product type
 - Include emotional triggers that motivate purchase
 - End with a clear call-to-action when appropriate
+- Use proper markdown formatting for better presentation
+- Always use ₹ symbol for INR amounts
+- Format large numbers with commas (e.g., ₹1,00,000)
+- Use K for thousands (e.g., ₹50K)
 
 Price Change Context:
 - If price decreased: Emphasize the sale/discount prominently
 - If price increased: Focus on enhanced value, quality, or new features
-- If price unchanged: Focus on product benefits and value proposition`
-        },
-        {
-          role: "user",
-          content: `Create promotional copy for this product:
+- If price unchanged: Focus on product benefits and value proposition
 
+Response Format Guidelines:
+1). Heading:
+    - Provide a clear, concise heading that reflects the promotional offer
+    - Keep it relevant and specific to the product and offer
+    - Use emojis for visual appeal
+    
+2). Description:
+    - Create compelling promotional copy with proper formatting
+    - Use tables for price comparisons when applicable
+    - Use lists for key benefits or features
+    - Use blockquotes for important offers or highlights
+    - Use bold text for emphasis on prices and savings
+    - Use emojis to enhance visual appeal
+    - Keep the response concise and relevant
+    - Use markdown formatting for better presentation
+
+Response Format Examples:
+
+1. For Sale Offers:
+   ### 🎉 Limited Time Sale!
+   | Item | Original Price | Sale Price | Savings |
+   |:-----|:---------------|:-----------|:--------|
+   | ${validatedInput.productName} | ₹${validatedInput.oldPrice.toLocaleString()} | ₹${validatedInput.newPrice.toLocaleString()} | **₹${priceChange.toLocaleString()}** |
+
+   > **🔥 Hot Deal:** Save **${discountPercentage}%** on ${validatedInput.productName}!
+   > 
+   > *${validatedInput.description}*
+   > 
+   > **⏰ Limited Time Offer** - Don't miss out on this incredible deal!
+
+2. For Price Increases:
+   ### ⬆️ Enhanced Value
+   | Feature | Previous | Now |
+   |:--------|:---------|:----|
+   | Price | ₹${validatedInput.oldPrice.toLocaleString()} | ₹${validatedInput.newPrice.toLocaleString()} |
+   | Value | Standard | **Enhanced** |
+
+   > **💎 Premium Quality:** ${validatedInput.productName} now offers enhanced features and superior quality.
+   > 
+   > *${validatedInput.description}*
+   > 
+   > **✨ Worth the Investment** - Experience the difference!
+
+3. For Regular Pricing:
+   ### 💫 Amazing Value
+   | Feature | Details |
+   |:--------|:--------|
+   | Product | ${validatedInput.productName} |
+   | Price | **₹${validatedInput.newPrice.toLocaleString()}** |
+   | Value | Exceptional |
+
+   > **🌟 Perfect Choice:** ${validatedInput.productName} delivers outstanding value at ₹${validatedInput.newPrice.toLocaleString()}.
+   > 
+   > *${validatedInput.description}*
+   > 
+   > **🚀 Get Yours Today** - Limited stock available!
+
+Markdown Formatting Rules:
+1. Headers:
+   - Use ### for main sections
+   - Keep headers concise and descriptive
+   - Add relevant emojis for visual hierarchy
+
+2. Tables:
+   - Use for price comparisons and feature lists
+   - Include relevant metrics
+   - Format numbers with proper separators
+   - Add totals when applicable
+
+3. Lists:
+   - Use for key benefits and features
+   - Keep items concise
+   - Add relevant emojis
+
+4. Blockquotes:
+   - Use for important offers and highlights
+   - Keep them brief and relevant
+
+5. Emphasis:
+   - Use **bold** for important prices and savings
+   - Use *italic* for emphasis
+   - Use \`code\` for technical terms
+
+6. Spacing:
+   - Add blank lines between sections
+   - Keep paragraphs short
+   - Use consistent spacing
+
+7. Emojis:
+   - Use for visual hierarchy
+   - Common emojis:
+     * 🎉 for sales
+     * 💰 for pricing
+     * ⏰ for urgency
+     * 🔥 for hot deals
+     * 💎 for premium
+     * ✨ for value
+     * 🚀 for action
+     * ⬆️ for increases
+     * 💫 for amazing
+     * 🌟 for perfect
+
+Product Information:
 Product: ${validatedInput.productName}
 Previous Price: ₹${validatedInput.oldPrice.toLocaleString()}
 Current Price: ₹${validatedInput.newPrice.toLocaleString()}
@@ -70,26 +184,14 @@ Description: ${validatedInput.description}
 ${isOnSale ? `🎉 SALE ALERT: Save ₹${priceChange.toLocaleString()} (${discountPercentage}% OFF!)` : ''}
 ${isPriceIncrease ? `⚠️ Note: Price has increased by ₹${Math.abs(priceChange).toLocaleString()}` : ''}
 
-Generate compelling promotional copy that will make customers want to buy this product immediately.`
-        }
-      ],
-      model: "llama3-70b-8192", 
-      temperature: 0.8, 
-      max_tokens: 300,
-      top_p: 0.9,
+Generate compelling promotional copy that will make customers want to buy this product immediately using the formatting guidelines above.`
     });
 
-    const promoCopy = completion.choices[0]?.message?.content || 
-      `${validatedInput.productName} - ${isOnSale ? 'Now on Sale!' : 'Available Now'} Get yours today for ₹${validatedInput.newPrice.toLocaleString()}!`;
-
-    console.log('Generated promo copy:', promoCopy);
-
-    // Validate output
-    const result = GeneratePromoCopyOutputSchema.parse({ promoCopy });
-    return result;
+    console.log('Successfully generated promotional copy');
+    return object;
 
   } catch (error) {
-    console.error('Error generating promo copy with Groq API:', error);
+    console.error('Error generating promo copy with Google AI API:', error);
     
     // Return a fallback promotional copy
     const priceChange = validatedInput.oldPrice - validatedInput.newPrice;
@@ -106,7 +208,9 @@ Generate compelling promotional copy that will make customers want to buy this p
     
     fallbackCopy += `${validatedInput.description.slice(0, 100)}... Don't miss out!`;
     
-    return { promoCopy: fallbackCopy };
+    return {
+      promoCopy: fallbackCopy
+    };
   }
 }
 
@@ -118,37 +222,30 @@ export async function generatePromoCopyVariations(
   const validatedInput = GeneratePromoCopyInputSchema.parse(input);
   
   try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert marketing copywriter. Generate ${variations} different promotional copy variations for the same product. Each variation should have a different tone and approach (e.g., urgency-focused, benefit-focused, emotional, etc.) but all should be compelling and sales-oriented.`
-        },
-        {
-          role: "user",
-          content: `Create ${variations} different promotional copy variations for:
+    // Check if API key is available
+    if (!apiKey) {
+      throw new Error('Google Generative AI API key is not configured');
+    }
 
+    console.log('Attempting to generate promotional copy variations...');
+    const { object } = await generateObject({
+      model: google('gemini-1.5-flash'),
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      schema: z.object({
+        variations: z.array(z.string()).describe('Array of promotional copy variations')
+      }),
+      prompt: `You are an expert marketing copywriter. Generate ${variations} different promotional copy variations for the same product. Each variation should have a different tone and approach (e.g., urgency-focused, benefit-focused, emotional, etc.) but all should be compelling and sales-oriented.
+
+Product Information:
 Product: ${validatedInput.productName}
 Previous Price: ₹${validatedInput.oldPrice.toLocaleString()}
 Current Price: ₹${validatedInput.newPrice.toLocaleString()}
 Description: ${validatedInput.description}
 
-Format: Return each variation numbered (1., 2., 3., etc.) on separate lines.`
-        }
-      ],
-      model: "llama3-70b-8192",
-      temperature: 0.9, // Higher temperature for more variety
-      max_tokens: 500,
+Generate ${variations} different promotional copy variations, each with a unique approach and tone.`
     });
 
-    const response = completion.choices[0]?.message?.content || '';
-    const variationsList = response
-      .split(/\d+\.\s+/)
-      .filter(v => v.trim())
-      .map(v => v.trim())
-      .slice(0, variations);
-
-    return { variations: variationsList };
+    return { variations: object.variations.slice(0, variations) };
 
   } catch (error) {
     console.error('Error generating promo copy variations:', error);
@@ -172,52 +269,34 @@ export async function analyzePromoCopy(promoCopy: string): Promise<{
   suggestions: string[] 
 }> {
   try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `You are a marketing analytics expert. Analyze promotional copy and provide:
+    // Check if API key is available
+    if (!apiKey) {
+      throw new Error('Google Generative AI API key is not configured');
+    }
+
+    console.log('Attempting to analyze promotional copy...');
+    const { object } = await generateObject({
+      model: google('gemini-1.5-flash'),
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      schema: z.object({
+        score: z.number().describe('Effectiveness score from 1-10'),
+        feedback: z.string().describe('Brief feedback on strengths and weaknesses'),
+        suggestions: z.array(z.string()).describe('Array of improvement suggestions')
+      }),
+      prompt: `You are a marketing analytics expert. Analyze promotional copy and provide:
 1. A score from 1-10 for effectiveness
 2. Brief feedback on strengths and weaknesses
 3. 2-3 specific improvement suggestions
 
-Consider: clarity, persuasiveness, urgency, benefits highlighting, call-to-action strength.`
-        },
-        {
-          role: "user",
-          content: `Analyze this promotional copy:
+Consider: clarity, persuasiveness, urgency, benefits highlighting, call-to-action strength.
 
+Promotional Copy to Analyze:
 "${promoCopy}"
 
-Provide analysis in this format:
-Score: [1-10]
-Feedback: [brief analysis]
-Suggestions:
-- [suggestion 1]
-- [suggestion 2]
-- [suggestion 3]`
-        }
-      ],
-      model: "llama3-70b-8192",
-      temperature: 0.3, // Lower temperature for analytical tasks
-      max_tokens: 400,
+Provide analysis with a score, feedback, and suggestions.`
     });
 
-    const response = completion.choices[0]?.message?.content || '';
-    
-    // Parse the response
-    const scoreMatch = response.match(/Score:\s*(\d+)/i);
-    const score = scoreMatch ? parseInt(scoreMatch[1]) : 7;
-    
-    const feedbackMatch = response.match(/Feedback:\s*([^\n]+)/i);
-    const feedback = feedbackMatch ? feedbackMatch[1] : 'Copy looks good overall.';
-    
-    const suggestionsMatch = response.match(/Suggestions:\s*((?:- [^\n]+\n?)+)/i);
-    const suggestions = suggestionsMatch 
-      ? suggestionsMatch[1].split('\n').filter(s => s.trim()).map(s => s.replace(/^-\s*/, ''))
-      : ['Consider adding more urgency', 'Highlight key benefits', 'Include a stronger call-to-action'];
-
-    return { score, feedback, suggestions };
+    return object;
 
   } catch (error) {
     console.error('Error analyzing promo copy:', error);
