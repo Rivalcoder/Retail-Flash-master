@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Store, User, ShoppingCart, Heart, Star, Eye, ExternalLink } from "lucide-react";
+import { Store, User, ShoppingCart, Heart, Star, Eye, ExternalLink, Sparkles } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import type { Product } from "@/lib/types";
@@ -24,6 +24,15 @@ interface CustomerPreviewProps {
 export default function CustomerPreview({ products }: CustomerPreviewProps) {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Products with promo copy:', products.filter(p => p.promoCopy).length);
+    console.log('All products:', products.length);
+    products.forEach((product, index) => {
+      console.log(`Product ${index}:`, product.name, 'Image:', product.image);
+    });
+  }, [products]);
 
   // Sync cart/wishlist counts from localStorage
   useEffect(() => {
@@ -86,26 +95,72 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
       {/* Hero Carousel */}
       <section className="w-full relative">
         <Swiper slidesPerView={1} loop autoplay className="h-72 md:h-96">
-          <SwiperSlide>
-            <div className="h-72 md:h-96 flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
-              <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80" alt="Fashion" className="absolute inset-0 w-full h-full object-cover opacity-40" />
-              <div className="relative z-10 text-center">
-                <h1 className="text-3xl md:text-5xl font-bold mb-4">Biggest Fashion Sale</h1>
-                <p className="mb-6 text-lg">Up to 70% OFF on top brands. Limited time only!</p>
-                <div className="px-6 py-3 rounded-full bg-white text-blue-700 font-semibold shadow">Shop Now</div>
+          {products.filter(p => p.promoCopy).slice(0, 3).map((product, index) => (
+            <SwiperSlide key={product.id || index}>
+              <div className="h-72 md:h-96 flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
+                <img 
+                  src={product.imageUrl || product.image || `https://images.unsplash.com/photo-${1500000000000 + index}?w=1200&q=80`} 
+                  alt={product.name} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  onError={(e) => {
+                    console.log('Image failed to load:', product.imageUrl || product.image);
+                    e.currentTarget.src = `https://images.unsplash.com/photo-${1500000000000 + index}?w=1200&q=80`;
+                  }}
+                />
+                <div className="relative z-10 text-center">
+                  <h1 className="text-3xl md:text-5xl font-bold mb-4">{product.name}</h1>
+                  <p className="mb-6 text-lg">{product.promoCopy}</p>
+                  <div className="px-6 py-3 rounded-full bg-white text-blue-700 font-semibold shadow">Shop Now</div>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="h-72 md:h-96 flex items-center justify-center bg-gradient-to-r from-pink-600 to-yellow-500 text-white relative">
-              <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=1200&q=80" alt="Fitness" className="absolute inset-0 w-full h-full object-cover opacity-40" />
-              <div className="relative z-10 text-center">
-                <h1 className="text-3xl md:text-5xl font-bold mb-4">Fitness Essentials</h1>
-                <p className="mb-6 text-lg">Gear up for your goals. Exclusive deals on fitness products.</p>
-                <div className="px-6 py-3 rounded-full bg-white text-pink-700 font-semibold shadow">Explore</div>
+            </SwiperSlide>
+          ))}
+          
+          {/* Show some products even if they don't have promo copy */}
+          {products.filter(p => p.promoCopy).length === 0 && products.length > 0 && (
+            products.slice(0, 3).map((product, index) => (
+              <SwiperSlide key={product.id || index}>
+                <div className="h-72 md:h-96 flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
+                  <img 
+                    src={product.imageUrl || product.image || `https://images.unsplash.com/photo-${1500000000000 + index}?w=1200&q=80`} 
+                    alt={product.name} 
+                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                    onError={(e) => {
+                      console.log('Image failed to load:', product.imageUrl || product.image);
+                      e.currentTarget.src = `https://images.unsplash.com/photo-${1500000000000 + index}?w=1200&q=80`;
+                    }}
+                  />
+                  <div className="relative z-10 text-center">
+                    <h1 className="text-3xl md:text-5xl font-bold mb-4">{product.name}</h1>
+                    <p className="mb-6 text-lg">Discover amazing products and exclusive deals</p>
+                    <div className="px-6 py-3 rounded-full bg-white text-blue-700 font-semibold shadow">Shop Now</div>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))
+          )}
+          
+          {/* Final fallback slide if no products at all */}
+          {products.length === 0 && (
+            <SwiperSlide className="rounded-md">
+              <div className="h-72 md:h-96 flex  items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80" 
+                  alt="Retail Flash" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  onError={(e) => {
+                    console.log('Fallback image failed to load');
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80";
+                  }}
+                />
+                <div className="relative z-10 text-center">
+                  <h1 className="text-3xl md:text-5xl font-bold mb-4">Welcome to Retail Flash</h1>
+                  <p className="mb-6 text-lg">Discover amazing products and exclusive deals</p>
+                  <div className="px-6 py-3 rounded-full bg-white text-blue-700 font-semibold shadow">Explore Products</div>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
+            </SwiperSlide>
+          )}
         </Swiper>
       </section>
 
