@@ -39,7 +39,7 @@ export default function PromoGenerator({ products }: PromoGeneratorProps) {
                 <TableRow key={product._id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {product.promoCopy || "No promo copy generated yet."}
+                    {(product.promoCopy || "No promo copy generated yet.").replace(/\*\*/g, "")}
                   </TableCell>
                   <TableCell className="text-right">₹{product.price.toLocaleString()}</TableCell>
                 </TableRow>

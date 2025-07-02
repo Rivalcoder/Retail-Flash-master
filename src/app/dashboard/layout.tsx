@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Button>
             
             <Avatar className="h-9 w-9 ring-2 ring-white dark:ring-slate-800 shadow-lg">
-              <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="person user" />
+              <AvatarImage src="https://static.vecteezy.com/system/resources/previews/020/429/953/original/admin-icon-vector.jpg" data-ai-hint="person user" />
               <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-semibold">
                 CU
               </AvatarFallback>

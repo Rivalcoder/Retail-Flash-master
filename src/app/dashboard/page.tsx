@@ -69,16 +69,16 @@ export default function CustomerDashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex flex-col">
       {/* Header with Customer Info */}
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      {/* <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
                 <Store className="h-6 w-6" /> Retail Flash
               </div>
-              
+               */}
               {/* Customer Info */}
-              <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+              {/* <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
                 <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                   {customerData.firstName} {customerData.lastName}
@@ -123,7 +123,7 @@ export default function CustomerDashboardPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Hero Carousel */}
       <section className="w-full relative">

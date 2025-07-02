@@ -109,7 +109,7 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
                 />
                 <div className="relative z-10 text-center">
                   <h1 className="text-3xl md:text-5xl font-bold mb-4">{product.name}</h1>
-                  <p className="mb-6 text-lg">{product.promoCopy}</p>
+                  <p className="mb-6 text-lg">{product.promoCopy && product.promoCopy.replace(/\*\*/g, "")}</p>
                   <div className="px-6 py-3 rounded-full bg-white text-blue-700 font-semibold shadow">Shop Now</div>
                 </div>
               </div>

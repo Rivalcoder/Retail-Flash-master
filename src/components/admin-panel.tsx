@@ -52,6 +52,8 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
 
   const [currentProduct, setCurrentProduct] = useState<ProductFormData>(initialProductForm);
 
+  const [showJsonGuide, setShowJsonGuide] = useState(false);
+
   const toast = (options: any) => {
     console.log('Toast:', options);
   };
@@ -386,59 +388,76 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fadeIn">
+        {/* Header with animation */}
+        <div className="text-center space-y-4 animate-slideIn">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
             Catalog Management
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Upload products via JSON file or add them manually
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Upload products via JSON file or add them manually with our intuitive interface
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto bg-slate-200 dark:bg-slate-700 rounded-lg border border-slate-300 dark:border-slate-600">
-            <TabsTrigger
-              value="upload"
-              className="flex items-center gap-3 px-4 py-1 rounded-md transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold"
-            >
-              <UploadCloud className="h-4 w-4" />
-              File Upload
-            </TabsTrigger>
-            <TabsTrigger
-              value="manual"
-              className="flex items-center gap-2 px-4 py-1 rounded-md transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-semibold"
-            >
-              <PenTool className="h-4 w-4" />
-              Manual Entry
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full animate-fadeIn">
+          {/* Redesigned Navbar Start */}
+          <div className="relative flex justify-center my-8">
+              <div className="relative flex w-fit bg-white/80 dark:bg-gray-900/80 rounded-full shadow-lg px-1 py-1 min-w-[340px] overflow-hidden">
+              {/* Animated indicator */}
+              <span
+                className={`absolute top-1 left-1 h-[44px] w-[calc(50%-8px)] rounded-full bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 shadow-md transition-all duration-300 ease-in-out z-0 ${activeTab === 'manual' ? 'translate-x-full' : 'translate-x-0'}`}
+                style={{ transitionProperty: 'transform, background, box-shadow' }}
+              />
+              <button
+                className={`relative z-10 flex items-center gap-2 px-8 py-2 rounded-full font-semibold text-base transition-all duration-200 focus:outline-none ${activeTab === 'upload'
+                  ? 'text-white drop-shadow-lg'
+                  : 'text-blue-700 dark:text-blue-200 hover:text-blue-900 dark:hover:text-white'} animate-fadeIn`}
+                onClick={() => setActiveTab('upload')}
+                type="button"
+              >
+                <UploadCloud className={`h-5 w-5 ${activeTab === 'upload' ? 'text-white' : 'text-blue-500 dark:text-blue-300'}`} />
+                <span>File Upload</span>
+              </button>
+              <button
+                className={`relative z-10 flex items-center gap-2 px-8 py-2 rounded-full font-semibold text-base transition-all duration-200 focus:outline-none ${activeTab === 'manual'
+                  ? 'text-white drop-shadow-lg'
+                  : 'text-green-700 dark:text-green-200 hover:text-green-900 dark:hover:text-white'} animate-fadeIn`}
+                onClick={() => setActiveTab('manual')}
+                type="button"
+              >
+                <PenTool className={`h-5 w-5 ${activeTab === 'manual' ? 'text-white' : 'text-green-500 dark:text-green-300'}`} />
+                <span>Manual Entry</span>
+              </button>
+            </div>
+          </div>
+          {/* Redesigned Navbar End */}
 
-          <TabsContent value="upload" className="space-y-6 p-5">
+          <TabsContent value="upload" className="space-y-6 p-1">
             {/* File Upload Card */}
-            <Card className="border-2 border-dashed border-blue-200 hover:border-blue-300 transition-colors">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-all hover:shadow-2xl animate-cardIn">
               <CardHeader className="text-center">
-                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <FileText className="h-8 w-8 text-blue-600" />
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-4 transition-transform hover:scale-105">
+                  <FileText className="h-10 w-10 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-2xl font-bold">Upload Product Catalog</CardTitle>
-                <CardDescription className="text-lg">
-                  Upload a JSON file to update your catalog. AI will automatically generate promotional copy.
+                <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
+                  Upload Product Catalog
+                </CardTitle>
+                <CardDescription className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Upload a JSON file to update your catalog. AI will automatically generate promotional copy and update your store.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Drag & Drop File Upload Section */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="catalog-file" className="text-sm font-medium">
+                    <Label htmlFor="catalog-file" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Product Catalog JSON File
                     </Label>
                     <div
-                      className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${dragActive
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-slate-300 dark:border-slate-600 hover:border-blue-400'
+                      className={`relative rounded-2xl p-8 text-center transition-all duration-300 ${dragActive
+                          ? 'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-dashed border-blue-500 shadow-inner'
+                          : 'bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-400 shadow-sm'
                         }`}
                       onDragEnter={handleDrag}
                       onDragLeave={handleDrag}
@@ -446,14 +465,17 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                       onDrop={handleDrop}
                     >
                       <div className="space-y-4">
-                        <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                          <UploadCloud className="h-6 w-6 text-blue-600" />
+                        <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-800/30 dark:to-purple-800/30 flex items-center justify-center transition-transform hover:scale-110">
+                          <UploadCloud className="h-7 w-7 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                          <p className="text-base font-medium text-slate-700 dark:text-slate-300">
-                            Drop your JSON file here, or click to browse
+                          <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                            Drop your JSON file here
                           </p>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                          <p className="text-gray-500 dark:text-gray-400 mt-1">
+                            or <span className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer">browse files</span>
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                             Supports JSON files only
                           </p>
                         </div>
@@ -467,13 +489,17 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                    <div className="flex items-center justify-between gap-4 mt-4">
+                      <div className="flex-1 min-w-0">
                         {fileName && (
-                          <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                            <CheckCircle className="h-4 w-4" />
-                            <span className="font-medium">{fileName}</span>
-                            <span className="text-green-500">ready for upload</span>
+                          <div className="flex items-center gap-3 text-sm bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-3 rounded-xl border border-green-200 dark:border-green-800/50 animate-pulse">
+                            <div className="bg-green-500 rounded-full p-1">
+                              <CheckCircle className="h-5 w-5 text-white" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-medium text-green-800 dark:text-green-200 truncate">{fileName}</p>
+                              <p className="text-green-600 dark:text-green-300 text-xs">Ready for upload</p>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -481,10 +507,10 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                         variant="outline"
                         size="sm"
                         onClick={downloadSampleJSON}
-                        className="ml-4 whitespace-nowrap"
+                        className="whitespace-nowrap bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
                       >
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Sample
+                        <Download className="mr-2 h-4 w-4 text-blue-600 group-hover:text-blue-700 dark:text-blue-400" />
+                        <span className="text-blue-600 group-hover:text-blue-700 dark:text-blue-400 font-medium">Download Sample</span>
                       </Button>
                     </div>
                   </div>
@@ -492,52 +518,73 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                   <Button
                     onClick={handleUpdateClick}
                     disabled={isPending || !file}
-                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
+                    className="w-full h-14 rounded-xl text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30 transition-all duration-300 group"
                   >
                     {isPending ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Processing Catalog...
+                        <Loader2 className="mr-3 h-5 w-5 animate-spin text-white" />
+                        <span className="text-white">Processing Catalog...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Update Catalog with AI Promo Generation
+                        <div className="mr-3 bg-white/20 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+                          <Sparkles className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="text-white">Update Catalog with AI</span>
                       </>
                     )}
                   </Button>
                 </div>
 
                 {/* Information Section */}
-                <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-800 dark:text-blue-200">
-                    <strong>How it works:</strong> Upload a JSON file with product data. The system will:
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>Add new products to your catalog</li>
-                      <li>Update existing products with new information</li>
-                      <li>Generate AI-powered promotional copy for new/updated products</li>
-                      <li>Track changes and maintain product history</li>
-                    </ul>
-                  </AlertDescription>
+                <Alert className="rounded-xl border-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-sm">
+                  <div className="flex gap-3">
+                    <div className="bg-blue-500 rounded-full p-2 flex items-center justify-center h-10 w-10">
+                      <AlertCircle className="h-5 w-5 text-white" />
+                    </div>
+                    <AlertDescription className="text-blue-800 dark:text-blue-200">
+                      <strong className="text-lg">How it works:</strong>
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>Add new products to your catalog</li>
+                        <li>Update existing products with new information</li>
+                        <li>Generate AI-powered promotional copy</li>
+                        <li>Track changes and maintain product history</li>
+                      </ul>
+                    </AlertDescription>
+                  </div>
                 </Alert>
-              </CardContent>
-            </Card>
 
-            {/* JSON Structure Guide */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
-                  JSON Structure Guide
-                </CardTitle>
-                <CardDescription>
-                  Your JSON file should contain an array of product objects with the following structure:
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 text-sm font-mono overflow-x-auto">
-                  <pre>{`[
+                {/* JSON Structure Guide as Hover Card */}
+                <div className="flex justify-end mt-2">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm font-medium transition-all"
+                    onClick={() => setShowJsonGuide(true)}
+                    tabIndex={0}
+                    aria-label="Show JSON Guide"
+                  >
+                    <Database className="h-4 w-4" />
+                    Show JSON Guide
+                  </button>
+                </div>
+                {/* Modal-style JSON Guide overlay */}
+                {showJsonGuide && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn">
+                    <div className="relative w-full max-w-lg mx-auto bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-900 dark:to-gray-950 rounded-2xl shadow-2xl border border-gray-700 p-6 text-sm font-mono text-gray-200 animate-fadeIn">
+                      <button
+                        type="button"
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 focus:outline-none"
+                        onClick={() => setShowJsonGuide(false)}
+                        aria-label="Close JSON Guide"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Database className="h-5 w-5 text-blue-400" />
+                        <span className="text-base font-semibold text-gray-100">JSON Structure Guide</span>
+                      </div>
+                      <div className="mb-2 text-xs text-gray-300 font-semibold">Your JSON file should contain an array of product objects with the following structure:</div>
+                      <pre className="whitespace-pre-wrap bg-gray-800/80 rounded-lg p-4 border border-gray-700 text-gray-200 text-xs overflow-x-auto">{`[
   {
     "id": "unique_product_id",
     "name": "Product Name",
@@ -548,46 +595,52 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
     "imageUrl": "https://example.com/image.jpg"
   }
 ]`}</pre>
-                </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="manual" className="space-y-6 p-5">
+          <TabsContent value="manual" className="space-y-6 p-1">
             {/* Manual Entry Card */}
-            <Card className="border-2 border-dashed border-green-200 hover:border-green-300 transition-colors">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-all hover:shadow-2xl animate-cardIn">
               <CardHeader className="text-center">
-                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <PenTool className="h-8 w-8 text-green-600" />
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 flex items-center justify-center mb-4 transition-transform hover:scale-105">
+                  <PenTool className="h-10 w-10 text-green-600 dark:text-green-400" />
                 </div>
-                <CardTitle className="text-2xl font-bold">Manual Product Entry</CardTitle>
-                <CardDescription className="text-lg">
-                  Add products one by one with a user-friendly form
+                <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
+                  Manual Product Entry
+                </CardTitle>
+                <CardDescription className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Add products one by one with our user-friendly form
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Product Form */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="product-id">Product ID (Optional)</Label>
+                    <Label htmlFor="product-id" className="text-gray-700 dark:text-gray-300">Product ID (Optional)</Label>
                     <Input
                       id="product-id"
                       placeholder="Auto-generated if left empty"
                       value={currentProduct.id || ""}
                       onChange={(e) => handleManualInputChange('id', e.target.value)}
+                      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="product-name">Product Name *</Label>
+                    <Label htmlFor="product-name" className="text-gray-700 dark:text-gray-300">Product Name *</Label>
                     <Input
                       id="product-name"
                       value={currentProduct.name}
                       onChange={(e) => handleManualInputChange('name', e.target.value)}
                       placeholder="e.g., Wireless Headphones"
+                      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="product-price">Price *</Label>
+                    <Label htmlFor="product-price" className="text-gray-700 dark:text-gray-300">Price *</Label>
                     <Input
                       id="product-price"
                       type="number"
@@ -595,53 +648,55 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                       value={currentProduct.price}
                       onChange={(e) => handleManualInputChange('price', e.target.value)}
                       placeholder="e.g., 99.99"
+                      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="product-category">Category</Label>
+                    <Label htmlFor="product-category" className="text-gray-700 dark:text-gray-300">Category</Label>
                     <Select value={currentProduct.category} onValueChange={(value) => handleManualInputChange('category', value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Electronics">Electronics</SelectItem>
-                        <SelectItem value="Clothing">Clothing</SelectItem>
-                        <SelectItem value="Fitness">Fitness</SelectItem>
-                        <SelectItem value="Home & Kitchen">Home & Kitchen</SelectItem>
-                        <SelectItem value="Books">Books</SelectItem>
-                        <SelectItem value="Sports">Sports</SelectItem>
-                        <SelectItem value="Beauty">Beauty</SelectItem>
-                        <SelectItem value="Toys">Toys</SelectItem>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 shadow-lg rounded-xl">
+                        <SelectItem value="Electronics" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Electronics</SelectItem>
+                        <SelectItem value="Clothing" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Clothing</SelectItem>
+                        <SelectItem value="Fitness" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Fitness</SelectItem>
+                        <SelectItem value="Home & Kitchen" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Home & Kitchen</SelectItem>
+                        <SelectItem value="Books" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Books</SelectItem>
+                        <SelectItem value="Sports" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Sports</SelectItem>
+                        <SelectItem value="Beauty" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Beauty</SelectItem>
+                        <SelectItem value="Toys" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Toys</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="product-stock">Stock Quantity</Label>
+                    <Label htmlFor="product-stock" className="text-gray-700 dark:text-gray-300">Stock Quantity</Label>
                     <Input
                       id="product-stock"
                       type="number"
                       value={currentProduct.stock}
                       onChange={(e) => handleManualInputChange('stock', e.target.value)}
                       placeholder="e.g., 100"
+                      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                     />
                   </div>
-                  <div className="space-y-4">
-                    <Label>Product Image</Label>
+                  <div className="space-y-4 md:col-span-2">
+                    <Label className="text-gray-700 dark:text-gray-300">Product Image</Label>
                     
                     {/* Image Preview */}
                     {currentProduct.imageUrl && (
                       <div className="relative group">
-                        <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
                           <img
                             src={currentProduct.imageUrl}
                             alt="Preview"
-                            className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800"
+                            className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800 transition-transform group-hover:scale-105 duration-500"
                           />
                         </div>
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md"
                           onClick={removeImage}
                         >
                           <X className="h-4 w-4" />
@@ -651,9 +706,9 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
 
                     {/* Upload Progress */}
                     {isUploading && (
-                      <div className="space-y-2">
-                        <Progress value={uploadProgress} className="h-2" />
-                        <p className="text-sm text-muted-foreground">
+                      <div className="space-y-2 mt-4">
+                        <Progress value={uploadProgress} className="h-2 bg-gray-200 dark:bg-gray-700" indicatorColor="bg-green-500" />
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           Uploading... {uploadProgress}%
                         </p>
                       </div>
@@ -661,28 +716,28 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
 
                     {/* Upload Options */}
                     {!currentProduct.imageUrl && (
-                      <div className="space-y-4">
+                      <div className="space-y-4 mt-2">
                         <div className="flex gap-3">
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 gap-2"
+                            className="flex-1 gap-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
                           >
-                            <Upload className="h-4 w-4" />
-                            Upload Image
+                            <Upload className="h-4 w-4 text-blue-600" />
+                            <span className="text-blue-600 font-medium">Upload Image</span>
                           </Button>
 
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 gap-2"
+                            className="flex-1 gap-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             onClick={() => setShowUrlInput(!showUrlInput)}
                             disabled={isUploading}
                           >
-                            <Link className="h-4 w-4" />
-                            Paste URL
+                            <Link className="h-4 w-4 text-green-600" />
+                            <span className="text-green-600 font-medium">Paste URL</span>
                           </Button>
                         </div>
 
@@ -696,8 +751,8 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                         />
 
                         {showUrlInput && (
-                          <div className="space-y-2">
-                            <Label htmlFor="image-url">Image URL</Label>
+                          <div className="space-y-2 animate-fadeIn">
+                            <Label htmlFor="image-url" className="text-gray-700 dark:text-gray-300">Image URL</Label>
                             <div className="flex gap-2">
                               <Input
                                 id="image-url"
@@ -708,7 +763,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                                     handleUrlSubmit(e.currentTarget.value);
                                   }
                                 }}
-                                className="flex-1"
+                                className="flex-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                               />
                               <Button
                                 type="button"
@@ -716,6 +771,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                                   const input = document.getElementById("image-url") as HTMLInputElement;
                                   handleUrlSubmit(input.value);
                                 }}
+                                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700"
                               >
                                 Add
                               </Button>
@@ -726,37 +782,38 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                     )}
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="product-description">Description</Label>
+                    <Label htmlFor="product-description" className="text-gray-700 dark:text-gray-300">Description</Label>
                     <Textarea
                       id="product-description"
                       value={currentProduct.description}
                       onChange={(e) => handleManualInputChange('description', e.target.value)}
                       placeholder="Enter product description..."
                       rows={3}
+                      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
                     />
                   </div>
                 </div>
 
                 <Button
                   onClick={addManualProduct}
-                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  className="w-full h-14 rounded-xl text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/20 hover:shadow-green-600/30 transition-all duration-300"
                 >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Add Product to List
+                  <Plus className="mr-3 h-5 w-5 text-white" />
+                  <span className="text-white">Add Product to List</span>
                 </Button>
               </CardContent>
             </Card>
 
             {/* Manual Products List */}
             {manualProducts.length > 0 && (
-              <Card>
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-all hover:shadow-2xl animate-cardIn">
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Products to Upload ({manualProducts.length})</span>
+                  <CardTitle className="flex flex-wrap items-center justify-between gap-4">
+                    <span className="text-xl text-gray-800 dark:text-white">Products to Upload ({manualProducts.length})</span>
                     <Button
                       onClick={handleManualUpload}
                       disabled={isPending}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-md transition-all"
                     >
                       {isPending ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -768,23 +825,41 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                     {manualProducts.map((product, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border">
-                        <div className="flex-1">
-                          <div className="font-medium text-slate-900 dark:text-slate-100">{product.name}</div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                            <span className="mr-3">ID: {product.id}</span>
-                            <span className="mr-3">Price: ${product.price}</span>
-                            <span className="mr-3">Category: {product.category || 'N/A'}</span>
-                            <span>Stock: {product.stock || 'N/A'}</span>
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-md animate-fadeIn"
+                      >
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          {product.imageUrl ? (
+                            <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                              <img 
+                                src={product.imageUrl} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                              <FileText className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <div className="font-bold text-gray-800 dark:text-white truncate">{product.name}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 flex flex-wrap gap-2">
+                              <span>ID: {product.id?.substring(0, 8)}...</span>
+                              <span>Price: ${product.price}</span>
+                              <span>Category: {product.category || 'N/A'}</span>
+                              <span>Stock: {product.stock || 'N/A'}</span>
+                            </div>
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => removeManualProduct(index)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors rounded-lg"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -797,6 +872,30 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        .animate-slideIn {
+          animation: slideIn 0.4s ease-out forwards;
+        }
+        .animate-cardIn {
+          animation: cardIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
