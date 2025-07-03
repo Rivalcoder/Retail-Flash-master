@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import type { Product } from "@/lib/types";
 import {
   Select,
@@ -15,7 +15,7 @@ import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { Send, Loader2, Bot, User, Sparkles, MessageCircle, Search, HelpCircle, Star, TrendingUp } from "lucide-react";
+import { Send, Loader2, Bot, User, Sparkles, MessageCircle, Search, HelpCircle, Star, TrendingUp, RefreshCcw, RotateCcw, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { answerQuestion } from "@/ai/flows/customer-q-and-a-bot";
 import { useToast } from "@/hooks/use-toast";
@@ -37,17 +37,19 @@ export default function QAndABot({ products }: QAndABotProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isPending, setIsPending] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+  useLayoutEffect(() => {
+    if (scrollViewportRef.current) {
+      setTimeout(() => {
+        scrollViewportRef.current?.scrollTo({
+          top: scrollViewportRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 0);
     }
-  }, [messages]);
+  }, [messages, isPending]);
   
   const handleSend = async () => {
     if (!input.trim()) {
@@ -74,6 +76,7 @@ export default function QAndABot({ products }: QAndABotProps) {
         productId: selectedProductId === "general" ? "general" : selectedProductId,
         question: input,
         products: products,
+        history: messages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
       });
       
       const botMessage: Message = { 
@@ -119,9 +122,17 @@ export default function QAndABot({ products }: QAndABotProps) {
 
   return (
     <div className="flex gap-6 h-full">
-
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 relative">
+        {/* New Chat floating button */}
+        <Button
+          variant="ghost"
+          className="absolute top-3 right-3 z-10 flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow hover:from-green-600 hover:to-emerald-600 transition p-2 w-9 h-9"
+          onClick={() => setMessages([])}
+          title="New chat"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
         <Card className="flex-1 flex flex-col min-h-0">
           <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center gap-2">
@@ -133,17 +144,16 @@ export default function QAndABot({ products }: QAndABotProps) {
               Ask questions about products and get instant AI-powered answers
             </CardDescription>
           </CardHeader>
-          
           <CardContent className="flex-1 flex flex-col p-0 min-h-0">
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+            <ScrollArea className="flex-1 p-6" viewportRef={scrollViewportRef}>
               <div className="space-y-4">
-                  {messages.length === 0 && (
-                    <motion.div
+                {messages.length === 0 && (
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-12"
-                    >
+                  >
                     <Bot className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                       Welcome to AI Shopping Assistant
@@ -151,9 +161,8 @@ export default function QAndABot({ products }: QAndABotProps) {
                     <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                       Select a product and ask any questions. I'll help you make informed purchasing decisions!
                     </p>
-                    </motion.div>
-                  )}
-
+                  </motion.div>
+                )}
                 <AnimatePresence>
                   {messages.map((message, index) => (
                     <motion.div
@@ -172,7 +181,6 @@ export default function QAndABot({ products }: QAndABotProps) {
                           </AvatarFallback>
                         </Avatar>
                       )}
-                      
                       <div
                         className={cn(
                           "max-w-[70%] rounded-lg p-3",
@@ -285,7 +293,7 @@ export default function QAndABot({ products }: QAndABotProps) {
                       </div>
                     </motion.div>
                   )}
-              </div>
+                </div>
             </ScrollArea>
 
             {/* Input Area */}

@@ -29,6 +29,10 @@ const AnswerQuestionInputSchema = z.object({
     features: z.array(z.string()).optional(),
     specifications: z.record(z.union([z.string(), z.array(z.string())])).optional(),
   })).describe('Complete product catalog data'),
+  history: z.array(z.object({
+    sender: z.enum(['user', 'bot']),
+    text: z.string(),
+  })).optional().describe('Chat history as an array of messages'),
 });
 export type AnswerQuestionInput = z.infer<typeof AnswerQuestionInputSchema>;
 
@@ -42,17 +46,25 @@ const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 console.log('API Key available:', !!apiKey);
 
 // Helper function to call local model
-async function callLocalModel(question: string, productsData: any, specificProduct: any): Promise<string | null> {
+async function callLocalModel(question: string, productsData: any, specificProduct: any, history?: { sender: string, text: string }[]): Promise<string | null> {
   try {
+    let historyBlock = '';
+    if (history && history.length > 0) {
+      historyBlock = '\n# Chat History (previous messages):\n' +
+        history.map(msg => `${msg.sender === 'user' ? '👤 User' : '🤖 Bot'}: ${msg.text}`).join('\n');
+    }
     const prompt = `You are a customer service chatbot for an e-commerce website. 
 You help customers by answering questions about specific products.
 Be concise, helpful, and professional in your responses.
+No need to Provide Image Data and All In The response how the user asks
+Based On the told the language Give all the repsonse in the user requested language if you Cannot know the language use English as Default
 
 COMPLETE PRODUCT CATALOG DATA:
 ${JSON.stringify(productsData, null, 2)}
 
 SPECIFIC PRODUCT CONTEXT:
 ${specificProduct ? JSON.stringify(specificProduct, null, 2) : 'User asking general questions about the catalog'}
+${historyBlock}
 
 Product Information Context:
 - You have access to the complete product catalog above
@@ -62,6 +74,16 @@ Product Information Context:
 - If user asks about features, use the actual features from the catalog
 - If user asks about specifications, use the actual specifications
 - Always maintain a friendly and professional tone
+# Multilingual Support:
+- Auto-detect the language of the customer's question.
+- Always reply in the **same language** (English, Hindi, Tamil, Telugu, etc.).
+- If unsure about language detection, default to English.
+- Keep product names and IDs in English for consistency.
+- Translate all other parts of the answer (description, features, etc.) to match the user's question language.
+- Use ₹ for prices (even in regional languages).
+- Follow Indian number formatting (₹1,00,000 or ₹50K).
+- When mentioning dates/times, use IST timezone.
+
 
 # Response Guidelines:
 1). Format your response with proper markdown:
@@ -138,7 +160,8 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
   console.log('Received input:', { 
     productId: validatedInput.productId, 
     question: validatedInput.question,
-    productsCount: validatedInput.products.length 
+    productsCount: validatedInput.products.length,
+    historyCount: validatedInput.history?.length || 0
   });
   
   try {
@@ -168,7 +191,7 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
 
     // First, try local model
     console.log('Attempting to call local model...');
-    const localResponse = await callLocalModel(validatedInput.question, productsData, specificProduct);
+    const localResponse = await callLocalModel(validatedInput.question, productsData, specificProduct, validatedInput.history);
     
     if (localResponse) {
       console.log('Successfully generated response from local model');
@@ -176,6 +199,11 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
     }
 
     console.log('Local model failed, falling back to Gemini...');
+    let historyBlock = '';
+    if (validatedInput.history && validatedInput.history.length > 0) {
+      historyBlock = '\n# Chat History (previous messages):\n' +
+        validatedInput.history.map(msg => `${msg.sender === 'user' ? '👤 User' : '🤖 Bot'}: ${msg.text}`).join('\n');
+    }
     const { object } = await generateObject({
       model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -189,6 +217,7 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
                
                SPECIFIC PRODUCT CONTEXT:
                ${specificProduct ? JSON.stringify(specificProduct, null, 2) : 'User asking general questions about the catalog'}
+               ${historyBlock}
                
                Product Information Context:
                - You have access to the complete product catalog above
@@ -199,6 +228,17 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
                - If user asks about specifications, use the actual specifications
                - Always maintain a friendly and professional tone
                
+               # Multilingual Support:
+            - Auto-detect the language of the customer's question.
+            - Always reply in the **same language** (English, Hindi, Tamil, Telugu, etc.).
+            - If unsure about language detection, default to English.
+            - Keep product names and IDs in English for consistency.
+            - Translate all other parts of the answer (description, features, etc.) to match the user's question language.
+            - Use ₹ for prices (even in regional languages).
+            - Follow Indian number formatting (₹1,00,000 or ₹50K).
+            - When mentioning dates/times, use IST timezone.
+            - Change ALl The Output to the Same Language as the User's Question All Datas.
+
                # Response Guidelines:
                1). Format your response with proper markdown:
                    - Use ### for headers
@@ -297,3 +337,9 @@ export async function getAvailableModels() {
     return [];
   }
 }
+
+
+
+
+
+
