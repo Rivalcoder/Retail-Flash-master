@@ -253,7 +253,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
       )} */}
 
       {/* Category Bar */}
-      <div className="w-full overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="w-full overflow-x-auto pb-2">
         <div className="flex gap-2 min-w-max">
           {categories.map((category) => (
             <Button
