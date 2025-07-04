@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
           }, 50);
         }
       };
-      
+
       loadAdminData();
     }
   }, [isClient]);
@@ -101,7 +101,7 @@ export default function AdminDashboardPage() {
       isMounted = false;
     };
   }, [isClient, adminData]);
-  
+
   // Handle authentication check on mount - with delay to allow localStorage to be ready
   useEffect(() => {
     if (isClient) {
@@ -125,14 +125,14 @@ export default function AdminDashboardPage() {
 
     // Listen for custom events
     window.addEventListener('toggle-sidebar', handleSidebarToggle);
-    
+
     // Listen for navigation to inventory from notification bell
     const handleNavigateToInventory = () => {
       setActiveSection('inventory');
     };
 
     window.addEventListener('navigate-to-inventory', handleNavigateToInventory);
-    
+
     // Also listen for localStorage changes
     const handleStorageChange = () => {
       const isOpen = localStorage.getItem('sidebar-open') === 'true';
@@ -140,7 +140,7 @@ export default function AdminDashboardPage() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Check initial state
     const initialSidebarState = localStorage.getItem('sidebar-open');
     if (initialSidebarState !== null) {
@@ -299,7 +299,7 @@ export default function AdminDashboardPage() {
           }).then(async (response) => {
             const result = await response.json();
             console.log('Generated promo copy for', productData.name, ':', result.promoCopy);
-            
+
             // Update the product with generated promo copy using MongoDB _id
             return fetch(`/api/products/${productData._id}`, {
               method: 'PATCH',
@@ -392,7 +392,7 @@ export default function AdminDashboardPage() {
     { id: "customer-preview", icon: Eye, label: "Customer Preview", color: "from-amber-500 to-orange-600" },
     { id: "admin", icon: Shield, label: "Admin", color: "from-orange-500 to-red-600" },
   ];
-  
+
   return (
     <div className="flex h-full">
       {/* Sidebar Navigation */}
@@ -415,11 +415,11 @@ export default function AdminDashboardPage() {
             </button>
             <div
               className={`
-                ml-3
-                transition-all duration-300 ease-in-out
-                ${sidebarOpen ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'}
-                overflow-hidden whitespace-nowrap
-              `}
+            ml-3
+            transition-all duration-300 ease-in-out
+            ${sidebarOpen ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'}
+            overflow-hidden whitespace-nowrap
+          `}
               style={{
                 transitionProperty: 'opacity, max-width, color',
                 display: 'inline-block',
@@ -427,102 +427,99 @@ export default function AdminDashboardPage() {
               }}
             >
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-0">Admin Panel</h2>
-              {/* <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p> */}
             </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="space-y-2 w-full flex-1 flex flex-col items-center">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3 justify-start' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${
-                  isActive
-                    ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
-                    : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
-                }`}
-              >
-                <Icon className={`h-5 w-5 transition-all duration-300 ${
-                  isActive ? 'text-white' : 'group-hover:scale-110'
-                }`} />
-                <span
-                  className={`
+          {/* Navigation */}
+          <nav className="space-y-2 w-full flex-1 flex flex-col items-center">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3 justify-start' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${isActive
+                      ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    }`}
+                >
+                  <Icon className={`h-5 w-5 transition-all duration-300 ${isActive ? 'text-white' : 'group-hover:scale-110'
+                    }`} />
+                  <span
+                    className={`
                     font-medium text-[16px]
                     transition-all duration-300 ease-in-out
                     ${isActive ? 'text-white' : ''}
                     ${sidebarOpen ? 'opacity-100 ml-2 max-w-[160px] pr-2' : 'opacity-0 ml-0 max-w-0 pr-0'}
                     overflow-hidden whitespace-nowrap align-middle
                   `}
-                  style={{
-                    transitionProperty: 'opacity, margin, max-width, padding, color',
-                    display: 'inline-block',
-                    verticalAlign: 'middle',
-                  }}
-                >
-                  {item.label}
-                </span>
-                {isActive && sidebarOpen && (
-                  <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
+                    style={{
+                      transitionProperty: 'opacity, margin, max-width, padding, color',
+                      display: 'inline-block',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                  {isActive && sidebarOpen && (
+                    <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
-        {/* Logout Button */}
-        <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 w-full ${sidebarOpen ? 'mt-8' : 'mt-4'}`}>
-          <button
-            onClick={handleLogout}
-            className={`flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300`}
-          >
-            <LogOut className="h-5 w-5" />
-            {sidebarOpen && <span className="font-medium">Logout</span>}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="h-full p-8 overflow-y-auto">
-          {activeSection === "inventory" && (
-            <div className="w-full max-w-none">
-              <InventoryPage />
-            </div>
-          )}
-          {activeSection === "promo-generator" && (
-            <PromoGenerator
-              products={products}
-              onUpdatePromoCopy={handleUpdatePromoCopy}
-              onGeneratePromoCopy={handleGeneratePromoCopy}
-            />
-          )}
-          {activeSection === "q-and-a-bot" && (
-          <QAndABot products={products} />
-          )}
-          {activeSection === "customer-preview" && (
-            <div className="w-full max-w-none">
-              <CustomerPreview products={products} />
-            </div>
-          )}
-          {activeSection === "admin" && (
-          <div className="w-full max-w-none">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
-              <div className="flex items-center gap-2 text-sm text-gray-100">
-                <span>{products.length} products</span>
-                <ExternalLink className="h-4 w-4" />
-              </div>
-            </div>
-            <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
+          {/* Logout Button */}
+          <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 w-full ${sidebarOpen ? 'mt-8' : 'mt-4'}`}>
+            <button
+              onClick={handleLogout}
+              className={`flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300`}
+            >
+              <LogOut className="h-5 w-5" />
+              {sidebarOpen && <span className="font-medium">Logout</span>}
+            </button>
           </div>
-          )}
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="h-full p-8 overflow-y-auto">
+            {activeSection === "inventory" && (
+              <div className="w-full max-w-none">
+                <InventoryPage />
+              </div>
+            )}
+            {activeSection === "promo-generator" && (
+              <PromoGenerator
+                products={products}
+                onUpdatePromoCopy={handleUpdatePromoCopy}
+                onGeneratePromoCopy={handleGeneratePromoCopy}
+              />
+            )}
+            {activeSection === "q-and-a-bot" && (
+              <QAndABot products={products} />
+            )}
+            {activeSection === "customer-preview" && (
+              <div className="w-full max-w-none">
+                <CustomerPreview products={products} />
+              </div>
+            )}
+            {activeSection === "admin" && (
+              <div className="w-full max-w-none">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
+                  <div className="flex items-center gap-2 text-sm text-gray-100">
+                    <span>{products.length} products</span>
+                    <ExternalLink className="h-4 w-4" />
+                  </div>
+                </div>
+                <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
   );
 }

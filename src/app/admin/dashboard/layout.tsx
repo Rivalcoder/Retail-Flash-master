@@ -99,7 +99,7 @@ export default function AdminDashboardLayout({
             </Button>
 
             <Avatar className="h-9 w-9 ring-2 ring-white dark:ring-slate-800 shadow-lg">
-              <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="logo abstract" />
+              <AvatarImage src="https://img.freepik.com/premium-vector/man-avatar-profile-picture-isolated-background-avatar-profile-picture-man_1293239-4861.jpg?semt=ais_hybrid&w=740" data-ai-hint="logo abstract" />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                 AD
               </AvatarFallback>
