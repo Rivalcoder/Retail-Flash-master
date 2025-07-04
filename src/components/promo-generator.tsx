@@ -45,7 +45,7 @@ import { toast } from "sonner";
 interface PromoGeneratorProps {
   products: Product[];
   onUpdatePromoCopy?: (productId: string, promoCopy: string) => void;
-  onGeneratePromoCopy?: (productId: string, tone: string, focus: string) => Promise<string>;
+  onGeneratePromoCopy?: (productId: string) => Promise<string>;
 }
 
 
@@ -56,8 +56,6 @@ export default function PromoGenerator({
 }: PromoGeneratorProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedTone, setSelectedTone] = useState<PromoTone>("exciting");
-  const [selectedFocus, setSelectedFocus] = useState<PromoFocus>("features");
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [editedCopy, setEditedCopy] = useState("");
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
@@ -80,7 +78,7 @@ export default function PromoGenerator({
     
     setGeneratingIds(prev => new Set(prev).add(productId));
     try {
-      const promoCopy = await onGeneratePromoCopy(productId, selectedTone, selectedFocus);
+      const promoCopy = await onGeneratePromoCopy(productId);
       onUpdatePromoCopy?.(productId, promoCopy);
       toast.success("Promo copy generated successfully!");
     } catch (error) {
@@ -92,7 +90,7 @@ export default function PromoGenerator({
         return newSet;
       });
     }
-  }, [onGeneratePromoCopy, onUpdatePromoCopy, selectedTone, selectedFocus]);
+  }, [onGeneratePromoCopy, onUpdatePromoCopy]);
 
   // Generate promo copy for all products (regenerates every time button is clicked)
   const handleGenerateAllPromoCopy = useCallback(async () => {
@@ -102,7 +100,7 @@ export default function PromoGenerator({
     setGeneratingIds(new Set(productIds));
     try {
       const promises = productIds.map(async (productId) => {
-        const promoCopy = await onGeneratePromoCopy(productId, selectedTone, selectedFocus);
+        const promoCopy = await onGeneratePromoCopy(productId);
         onUpdatePromoCopy?.(productId, promoCopy);
       });
       await Promise.all(promises);
@@ -112,7 +110,7 @@ export default function PromoGenerator({
     } finally {
       setGeneratingIds(new Set());
     }
-  }, [filteredProducts, onGeneratePromoCopy, onUpdatePromoCopy, selectedTone, selectedFocus]);
+  }, [filteredProducts, onGeneratePromoCopy, onUpdatePromoCopy]);
 
   // Copy promo copy to clipboard
   const handleCopyPromoCopy = useCallback((promoCopy: string) => {
@@ -224,6 +222,16 @@ export default function PromoGenerator({
           </div>
 
           {/* Generation Controls */}
+          <div className="flex flex-wrap gap-4">
+            <Button 
+              onClick={handleGenerateAllPromoCopy}
+              disabled={generatingIds.size > 0}
+              className="gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Generate All
+            </Button>
+          </div>
         </div>
 
         {/* Table */}

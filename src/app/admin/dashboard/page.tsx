@@ -354,7 +354,7 @@ export default function AdminDashboardPage() {
   };
 
   // Handler to generate promo copy for a product
-  const handleGeneratePromoCopy = async (productId: string, tone: string, focus: string) => {
+  const handleGeneratePromoCopy = async (productId: string) => {
     try {
       const product = products.find(p => p._id === productId);
       if (!product) throw new Error('Product not found');
@@ -367,8 +367,6 @@ export default function AdminDashboardPage() {
           price: product.price,
           oldPrice: product.oldPrice || product.price,
           description: product.description || '',
-          tone,
-          focus,
         }),
       });
       if (!response.ok) throw new Error('Failed to generate promo copy');
