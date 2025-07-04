@@ -258,8 +258,6 @@ export default function PromoGenerator({
                 </SelectContent>
               </Select>
             </div>
-
-            
           </div>
         </div>
 

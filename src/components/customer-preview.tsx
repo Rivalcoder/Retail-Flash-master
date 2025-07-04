@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Store, User, ShoppingCart, Heart, Star, Eye, ExternalLink, Sparkles } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import type { Product } from "@/lib/types";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -94,7 +95,12 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
 
       {/* Hero Carousel */}
       <section className="w-full relative">
-        <Swiper slidesPerView={1} loop autoplay className="h-72 md:h-96">
+        <Swiper
+          slidesPerView={1}
+          modules={[Autoplay]}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          className="h-72 md:h-96"
+        >
           {products.filter(p => p.promoCopy).slice(0, 3).map((product, index) => (
             <SwiperSlide key={product.id || index}>
               <div className="h-72 md:h-96 flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">

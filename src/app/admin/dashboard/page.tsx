@@ -17,6 +17,7 @@ import {
   Package,
   Eye,
   ExternalLink,
+  Menu,
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
@@ -66,10 +67,7 @@ export default function AdminDashboardPage() {
 
   // Load products from Pathway API first, then fallback to database on mount
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
     let isMounted = true;
-    let firstLoad = true;
-
     const loadProducts = async (showLoading = false) => {
       if (showLoading) setIsLoadingProducts(true);
       let productsData = [];
@@ -100,12 +98,10 @@ export default function AdminDashboardPage() {
     };
 
     if (isClient && adminData && isAdminLoggedIn()) {
-      loadProducts(true); // Initial load shows spinner
-      intervalId = setInterval(() => loadProducts(false), 3000); // Poll every 3 seconds, no spinner
+      loadProducts(true); // Only fetch once on mount
     }
     return () => {
       isMounted = false;
-      if (intervalId) clearInterval(intervalId);
     };
   }, [isClient, adminData]);
   
@@ -245,13 +241,10 @@ export default function AdminDashboardPage() {
       try {
         const text = await file.text();
         const newProductsData = JSON.parse(text);
-
-        // Get admin authentication headers
         const authHeaders = getAdminAuthHeaders();
         if (!authHeaders['x-admin-id']) {
           throw new Error('Admin authentication required. Please log in again.');
         }
-
         // Upload to database via API
         const response = await fetch('/api/products/upload-json', {
           method: 'POST',
@@ -261,13 +254,15 @@ export default function AdminDashboardPage() {
           },
           body: JSON.stringify(newProductsData),
         });
-
         const result = await response.json();
-
         if (!response.ok) {
           throw new Error(result.error || 'Failed to upload products');
         }
-
+        // Only append products that are truly new (not already in the list)
+        setProducts(prev => [
+          ...prev,
+          ...newProductsData.filter((p: any) => !prev.some(prod => prod.id === p.id))
+        ]);
         // Process AI promo generation for new/updated products
         const productsNeedingPromo = result.results
           .filter((r: any) => r.status === 'created' || r.status === 'updated')
@@ -322,15 +317,6 @@ export default function AdminDashboardPage() {
         await Promise.all(generationPromises);
         console.log('All promo generation completed');
 
-        // Refresh products from database
-        setIsLoadingProducts(true);
-        const productsResponse = await fetch('/api/products');
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          setProducts(productsData.products || []);
-        }
-        setIsLoadingProducts(false);
-
         setUpdatedIds(justUpdatedIds);
 
         toast({
@@ -350,6 +336,52 @@ export default function AdminDashboardPage() {
     });
   };
 
+  // Handler to update promo copy for a product
+  const handleUpdatePromoCopy = async (productId: string, promoCopy: string) => {
+    try {
+      const authHeaders = getAdminAuthHeaders();
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({ promoCopy }),
+      });
+      if (!response.ok) throw new Error('Failed to update promo copy');
+      // Only update local state, do not re-fetch from backend
+      setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy } : p));
+    } catch (err) {
+      console.error('Error updating promo copy:', err);
+    }
+  };
+
+  // Handler to generate promo copy for a product
+  const handleGeneratePromoCopy = async (productId: string, tone: string, focus: string) => {
+    try {
+      const product = products.find(p => p._id === productId);
+      if (!product) throw new Error('Product not found');
+      const authHeaders = getAdminAuthHeaders();
+      const response = await fetch('/api/promo/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({
+          name: product.name,
+          price: product.price,
+          oldPrice: product.oldPrice || product.price,
+          description: product.description || '',
+          tone,
+          focus,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to generate promo copy');
+      const data = await response.json();
+      // Immediately update local state with new promo copy
+      setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy: data.promoCopy } : p));
+      return data.promoCopy;
+    } catch (err) {
+      console.error('Error generating promo copy:', err);
+      throw err;
+    }
+  };
+
   const navItems = [
     { id: "inventory", icon: Package, label: "Inventory", color: "from-green-500 to-emerald-600" },
     { id: "promo-generator", icon: Sparkles, label: "Promo", color: "from-purple-500 to-pink-600" },
@@ -361,55 +393,82 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex h-full">
       {/* Sidebar Navigation */}
-      {sidebarOpen && (
-        <div className="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-6 w-64 overflow-y-auto z-40 transition-all duration-300">
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p>
-          </div>
-          
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] ${
-                    isActive 
-                      ? `bg-gradient-to-r ${item.color} text-white shadow-lg` 
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
-                  }`}
-                >
-                  <Icon className={`h-5 w-5 transition-all duration-300 ${
-                    isActive ? 'text-white' : 'group-hover:scale-110'
-                  }`} />
-                  <span className={`font-medium transition-all duration-300 ${
-                    isActive ? 'text-white' : ''
-                  }`}>
-                    {item.label}
-                  </span>
-                  {isActive && (
-                    <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Logout Button */}
-          <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
-            >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Logout</span>
-            </button>
-          </div>
+      <div
+        className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-2 flex flex-col items-center overflow-y-auto z-40 transition-all duration-300
+          ${sidebarOpen ? 'w-64 px-6' : 'w-16 px-2'}
+        `}
+      >
+        {/* Sidebar Header and Toggle */}
+        <div className={`flex items-center justify-between w-full mb-8 ${sidebarOpen ? '' : 'flex-col mb-4'}`}>
+          {sidebarOpen && (
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h2>
+              {/* <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p> */}
+            </div>
+          )}
+          <button
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label={sidebarOpen ? 'Minimize sidebar' : 'Expand sidebar'}
+          >
+            <span className="sr-only">Toggle sidebar</span>
+            <Menu className="h-5 w-5" />
+          </button>
         </div>
-      )}
+
+        {/* Navigation */}
+        <nav className="space-y-2 w-full flex-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${
+                  isActive
+                    ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                <Icon className={`h-5 w-5 transition-all duration-300 ${
+                  isActive ? 'text-white' : 'group-hover:scale-110'
+                }`} />
+                <span
+                  className={`
+                    font-medium text-[16px]
+                    transition-all duration-300 ease-in-out
+                    ${isActive ? 'text-white' : ''}
+                    ${sidebarOpen ? 'opacity-100 ml-2 max-w-[160px] pr-2' : 'opacity-0 ml-0 max-w-0 pr-0'}
+                    overflow-hidden whitespace-nowrap align-middle
+                  `}
+                  style={{
+                    transitionProperty: 'opacity, margin, max-width, padding, color',
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                  }}
+                >
+                  {item.label}
+                </span>
+                {isActive && sidebarOpen && (
+                  <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Logout Button */}
+        <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 w-full ${sidebarOpen ? 'mt-8' : 'mt-4'}`}>
+          <button
+            onClick={handleLogout}
+            className={`flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300`}
+          >
+            <LogOut className="h-5 w-5" />
+            {sidebarOpen && <span className="font-medium">Logout</span>}
+          </button>
+        </div>
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden">
@@ -420,31 +479,10 @@ export default function AdminDashboardPage() {
             </div>
           )}
           {activeSection === "promo-generator" && (
-            <PromoGenerator 
+            <PromoGenerator
               products={products}
-              onUpdatePromoCopy={(productId, promoCopy) => {
-                setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy } : p));
-              }}
-              onGeneratePromoCopy={async (productId, tone, focus) => {
-                // Find the product
-                const product = products.find(p => p._id === productId);
-                if (!product) return "";
-                // Call the backend API to generate promo copy
-                const response = await fetch('/api/promo/generate', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    name: product.name,
-                    price: product.price,
-                    oldPrice: product.oldPrice || product.price,
-                    description: product.description || "",
-                    tone,
-                    focus
-                  })
-                });
-                const data = await response.json();
-                return data.promoCopy || "";
-              }}
+              onUpdatePromoCopy={handleUpdatePromoCopy}
+              onGeneratePromoCopy={handleGeneratePromoCopy}
             />
           )}
           {activeSection === "q-and-a-bot" && (
