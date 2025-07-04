@@ -48,8 +48,6 @@ interface PromoGeneratorProps {
   onGeneratePromoCopy?: (productId: string, tone: string, focus: string) => Promise<string>;
 }
 
-type PromoTone = "exciting" | "professional" | "casual" | "luxurious" | "playful";
-type PromoFocus = "features" | "benefits" | "price" | "quality" | "urgency";
 
 export default function PromoGenerator({ 
   products, 
@@ -226,39 +224,6 @@ export default function PromoGenerator({
           </div>
 
           {/* Generation Controls */}
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Tone:</label>
-              <Select value={selectedTone} onValueChange={value => setSelectedTone(value as PromoTone)}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="exciting">Exciting</SelectItem>
-                  <SelectItem value="professional">Professional</SelectItem>
-                  <SelectItem value="casual">Casual</SelectItem>
-                  <SelectItem value="luxurious">Luxurious</SelectItem>
-                  <SelectItem value="playful">Playful</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Focus:</label>
-              <Select value={selectedFocus} onValueChange={value => setSelectedFocus(value as PromoFocus)}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="features">Features</SelectItem>
-                  <SelectItem value="benefits">Benefits</SelectItem>
-                  <SelectItem value="price">Price</SelectItem>
-                  <SelectItem value="quality">Quality</SelectItem>
-                  <SelectItem value="urgency">Urgency</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
         </div>
 
         {/* Table */}
