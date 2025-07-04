@@ -200,13 +200,13 @@ export default function QAndABot() {
   const selectedProduct = selectedProductId === "general" ? null : products.find(p => p._id === selectedProductId);
 
   const suggestedQuestions = [
-    "What are the key features of this product?",
-    "How does this compare to similar products?",
-    "What are the warranty terms?",
-    "What accessories are included?",
-    "How long does shipping take?",
-    "What's the return policy?",
-    "Are there any discounts available?"
+    "What is the current stock level?",
+    "What is the product category?",
+    "Is this product new or used?",
+    "What is the product description?",
+    "What is the product ID?",
+    "What is the product price?",
+    "Does this product have an image?"
   ];
 
   const popularProducts = products.slice(0, 4);
@@ -501,6 +501,7 @@ export default function QAndABot() {
                     value={selectedProductId}
                     onChange={(e) => setSelectedProductId(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                    aria-label="Select a product to ask questions about"
                   >
                     <option value="general">General Questions</option>
                     {products.map((product) => (
