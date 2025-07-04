@@ -53,7 +53,7 @@ export default function QAndABot({ products }: QAndABotProps) {
       }, 0);
     }
   }, [messages, isPending]);
-  
+
   // Check for browser speech support
   useEffect(() => {
     if (typeof window !== "undefined" &&
@@ -87,8 +87,8 @@ export default function QAndABot({ products }: QAndABotProps) {
       return;
     }
 
-    const userMessage: Message = { 
-      sender: "user", 
+    const userMessage: Message = {
+      sender: "user",
       text: input,
       timestamp: new Date(),
       productId: selectedProductId === "general" ? undefined : selectedProductId
@@ -109,9 +109,9 @@ export default function QAndABot({ products }: QAndABotProps) {
         })),
         history: messages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
       });
-      
-      const botMessage: Message = { 
-        sender: "bot", 
+
+      const botMessage: Message = {
+        sender: "bot",
         text: response.answer,
         timestamp: new Date(),
         productId: selectedProductId === "general" ? undefined : selectedProductId
@@ -160,7 +160,6 @@ export default function QAndABot({ products }: QAndABotProps) {
     "What are the key features of this product?",
     "How does this compare to similar products?",
     "What are the warranty terms?",
-    "Is this suitable for beginners?",
     "What accessories are included?",
     "How long does shipping take?",
     "What's the return policy?",
@@ -219,9 +218,8 @@ export default function QAndABot({ products }: QAndABotProps) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className={`flex gap-3 ${
-                        message.sender === "user" ? "justify-end" : "justify-start"
-                      }`}
+                      className={`flex gap-3 ${message.sender === "user" ? "justify-end" : "justify-start"
+                        }`}
                     >
                       {message.sender === "bot" && (
                         <Avatar className="h-8 w-8">
@@ -240,35 +238,35 @@ export default function QAndABot({ products }: QAndABotProps) {
                       >
                         <div className="whitespace-pre-wrap text-sm prose prose-sm max-w-none dark:prose-invert">
                           {message.sender === "bot" ? (
-                            <div dangerouslySetInnerHTML={{ 
+                            <div dangerouslySetInnerHTML={{
                               __html: (() => {
                                 let text = message.text;
-                                
+
                                 // Handle headers
                                 text = text.replace(/### (.*)/g, '<h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">$1</h3>');
                                 text = text.replace(/## (.*)/g, '<h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">$1</h2>');
-                                
+
                                 // Handle bold and italic
                                 text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
                                 text = text.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
-                                
+
                                 // Handle code
                                 text = text.replace(/`(.*?)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
-                                
+
                                 // Handle blockquotes
                                 text = text.replace(/> (.*)/g, '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 my-2">$1</blockquote>');
-                                
+
                                 // Handle tables - find table blocks and convert them
                                 text = text.replace(/(\|.*\|[\s\S]*?)(?=\n\n|\n[^|]|$)/g, (match) => {
                                   const lines = match.trim().split('\n').filter(line => line.trim());
                                   if (lines.length < 2) return match;
-                                  
+
                                   let tableHtml = '<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600">';
-                                  
+
                                   lines.forEach((line, index) => {
                                     const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
                                     if (cells.length === 0) return;
-                                    
+
                                     if (index === 0) {
                                       // Header row
                                       tableHtml += '<thead><tr>';
@@ -288,14 +286,14 @@ export default function QAndABot({ products }: QAndABotProps) {
                                       tableHtml += '</tr>';
                                     }
                                   });
-                                  
+
                                   tableHtml += '</tbody></table></div>';
                                   return tableHtml;
                                 });
-                                
+
                                 // Handle line breaks
                                 text = text.replace(/\n/g, '<br>');
-                                
+
                                 return text;
                               })()
                             }} />
@@ -322,27 +320,27 @@ export default function QAndABot({ products }: QAndABotProps) {
                   ))}
                 </AnimatePresence>
 
-                  {isPending && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                {isPending && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="flex gap-3 justify-start"
-                    >
+                  >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
                         AI
                       </AvatarFallback>
-                      </Avatar>
+                    </Avatar>
                     <div className="bg-slate-100 dark:bg-slate-800 border rounded-lg p-3">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             </ScrollArea>
 
             {/* Input Area */}
@@ -380,10 +378,10 @@ export default function QAndABot({ products }: QAndABotProps) {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Left Sidebar - Product Selection & Suggestions */}
       <div className="w-80 space-y-6 overflow-y-auto">
-          {/* Product Selection */}
+        {/* Product Selection */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -397,7 +395,7 @@ export default function QAndABot({ products }: QAndABotProps) {
           <CardContent className="space-y-4">
             <Select onValueChange={setSelectedProductId} value={selectedProductId}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a product..." />
+                <SelectValue placeholder="Select a product..." className="text-gray-700 placeholder:text-gray-700" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="general">General Questions</SelectItem>
@@ -405,15 +403,14 @@ export default function QAndABot({ products }: QAndABotProps) {
                   <div
                     key={product._id}
                     onClick={() => setSelectedProductId(product._id)}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                      selectedProductId === product._id
+                    className={`p-4 rounded-lg border cursor-pointer transition-all ${selectedProductId === product._id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
-                        <img 
+                        <img
                           src={product.image || product.imageUrl}
                           alt={product.name}
                           className="w-full h-full object-cover"
@@ -437,25 +434,25 @@ export default function QAndABot({ products }: QAndABotProps) {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white dark:border-gray-700 shadow-sm">
-                  <img 
+                    <img
                       src={selectedProduct.image || selectedProduct.imageUrl}
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 dark:text-white truncate">{selectedProduct.name}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <span>₹{Number(selectedProduct.price).toLocaleString()}</span>
-                    <span>•</span>
+                      <span>•</span>
                       <span>{selectedProduct.stock} in stock</span>
-                    {selectedProduct.isNew && (
-                      <>
-                        <span>•</span>
-                        <Badge className="bg-green-500 text-white text-xs">New</Badge>
-                      </>
-                    )}
-                  </div>
+                      {selectedProduct.isNew && (
+                        <>
+                          <span>•</span>
+                          <Badge className="bg-green-500 text-white text-xs">New</Badge>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -514,7 +511,7 @@ export default function QAndABot({ products }: QAndABotProps) {
                   )}
                 >
                   <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
-                    <img 
+                    <img
                       src={product.image || product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-cover"
@@ -523,7 +520,7 @@ export default function QAndABot({ products }: QAndABotProps) {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm truncate">{product.name}</div>
                     <div className="text-xs text-muted-foreground">₹{Number(product.price).toLocaleString()}</div>
-              </div>
+                  </div>
                   {product.isNew && (
                     <Badge className="bg-green-500 text-white text-xs">New</Badge>
                   )}

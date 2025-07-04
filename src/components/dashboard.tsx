@@ -260,8 +260,13 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className="rounded-full px-5 py-2 whitespace-nowrap shadow-sm border-2 border-blue-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200"
+              onClick={() => setSelectedCategory(category || "All")}
+              className={cn(
+                "rounded-full px-5 py-2 whitespace-nowrap shadow-sm border-2 transition-all duration-200",
+                selectedCategory === category
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-blue-200 dark:shadow-blue-900/30"
+                  : "border-blue-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              )}
             >
               {category}
             </Button>
@@ -305,82 +310,89 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
             </div>
             {/* Product Info */}
             <div className="flex-1 flex flex-col p-5 gap-2">
-              {/* Product Status Badge - show only the most relevant */}
-              {(() => {
-                // Priority: Flash Sale > Hot Deal > Price Drop > New Arrival > Selling Fast
-                const isFlashSale = product.oldPrice && product.price < product.oldPrice && product.stock && product.stock <= 10;
-                const isHotDeal = product.stock !== undefined && product.stock <= 10 && product.stock > 0;
-                const isPriceDrop = product.oldPrice && product.price < product.oldPrice;
-                const isNew = product.isNew;
-                const isSellingFast = product.stock !== undefined && product.stock <= 5 && !isHotDeal;
-                if (isFlashSale) {
-                  return (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-pink-500 text-white rounded-full text-xs font-semibold shadow">
-                        <Zap className="h-4 w-4 text-white" />
-                        Flash Sale! Limited Time
-                      </span>
-                    </div>
-                  );
-                } else if (isHotDeal) {
-                  return (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-red-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
-                        <Flame className="h-4 w-4 text-white" />
-                        Hot Deal! Only {product.stock} left!
-                      </span>
-                    </div>
-                  );
-                } else if (isPriceDrop) {
-                  return (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-xs font-semibold shadow">
-                        <TrendingDown className="h-4 w-4 text-white" />
-                        Price Drop!
-                      </span>
-                    </div>
-                  );
-                } else if (isNew) {
-                  return (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-500 to-blue-400 text-white rounded-full text-xs font-semibold shadow">
-                        <Star className="h-4 w-4 text-white" />
-                        New Arrival
-                      </span>
-                    </div>
-                  );
-                } else if (isSellingFast) {
-                  return (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-orange-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
-                        <AlertTriangle className="h-4 w-4 text-white" />
-                        Selling Fast! Only {product.stock} left!
-                      </span>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-              <div className="flex items-center justify-between">
-                <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700">{product.category}</Badge>
-                <div className="flex items-center text-yellow-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3 w-3 fill-current" />
-                  ))}
+              {/* Top Content - Fixed at top */}
+              <div className="space-y-2">
+                {/* Product Status Badge - show only the most relevant */}
+                {(() => {
+                  // Priority: Flash Sale > Hot Deal > Price Drop > New Arrival > Selling Fast
+                  const isFlashSale = product.oldPrice && product.price < product.oldPrice && product.stock && product.stock <= 10;
+                  const isHotDeal = product.stock !== undefined && product.stock <= 10 && product.stock > 0;
+                  const isPriceDrop = product.oldPrice && product.price < product.oldPrice;
+                  const isNew = product.isNew;
+                  const isSellingFast = product.stock !== undefined && product.stock <= 5 && !isHotDeal;
+                  if (isFlashSale) {
+                    return (
+                      <div className="mb-2 flex items-center justify-center">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-pink-500 text-white rounded-full text-xs font-semibold shadow">
+                          <Zap className="h-4 w-4 text-white" />
+                          Flash Sale! Limited Time
+                        </span>
+                      </div>
+                    );
+                  } else if (isHotDeal) {
+                    return (
+                      <div className="mb-2 flex items-center justify-center">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-red-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
+                          <Flame className="h-4 w-4 text-white" />
+                          Hot Deal! Only {product.stock} left!
+                        </span>
+                      </div>
+                    );
+                  } else if (isPriceDrop) {
+                    return (
+                      <div className="mb-2 flex items-center justify-center">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-xs font-semibold shadow">
+                          <TrendingDown className="h-4 w-4 text-white" />
+                          Price Drop!
+                        </span>
+                      </div>
+                    );
+                  } else if (isNew) {
+                    return (
+                      <div className="mb-2 flex items-center justify-center">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-500 to-blue-400 text-white rounded-full text-xs font-semibold shadow">
+                          <Star className="h-4 w-4 text-white" />
+                          New Arrival
+                        </span>
+                      </div>
+                    );
+                  } else if (isSellingFast) {
+                    return (
+                      <div className="mb-2 flex items-center justify-center">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-orange-500 to-yellow-400 text-white rounded-full text-xs font-semibold shadow">
+                          <AlertTriangle className="h-4 w-4 text-white" />
+                          Selling Fast! Only {product.stock} left!
+                        </span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700">{product.category}</Badge>
+                  <div className="flex items-center text-yellow-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-current" />
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="text-lg font-bold leading-tight group-hover:text-blue-700 transition-colors">{product.name}</CardTitle>
-              {product.tagline && (
-                <p className="text-xs text-blue-600 dark:text-blue-200 font-medium italic">{product.tagline}</p>
-              )}
-              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{product.description}</p>
-              <div className="flex items-end gap-2 mt-2">
-                <span className="text-xl font-bold text-blue-700">₹{product.price.toLocaleString()}</span>
-                {product.oldPrice && (
-                  <span className="text-sm text-gray-400 line-through">₹{product.oldPrice.toLocaleString()}</span>
+                <CardTitle className="text-lg font-bold leading-tight group-hover:text-blue-700 transition-colors">{product.name}</CardTitle>
+                {product.tagline && (
+                  <p className="text-xs text-blue-600 dark:text-blue-200 font-medium italic">{product.tagline}</p>
                 )}
+                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{product.description}</p>
               </div>
-              <Button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Add to Cart <ShoppingCart className="ml-2 h-4 w-4" /></Button>
+
+              {/* Bottom Content - Pushed to bottom */}
+              <div className="mt-auto space-y-2">
+                <div className="flex items-end gap-2">
+                  <span className="text-xl font-bold text-blue-700">₹{product.price.toLocaleString()}</span>
+                  {product.oldPrice && (
+                    <span className="text-sm text-gray-400 line-through">₹{product.oldPrice.toLocaleString()}</span>
+                  )}
+                </div>
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Add to Cart <ShoppingCart className="ml-2 h-4 w-4" /></Button>
+              </div>
             </div>
           </motion.div>
           ))}

@@ -412,7 +412,7 @@ export default function InventoryPage() {
           {filteredProducts.map((product) => {
             const stockStatus = getStockStatus(product.stock);
             return (
-              <Card key={product._id} className="group hover:shadow-lg transition-all duration-300">
+              <Card key={product._id} className="group hover:shadow-lg transition-all duration-300 flex flex-col h-full">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -447,7 +447,7 @@ export default function InventoryPage() {
                     </DropdownMenu>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 flex-1 flex flex-col">
                   {/* Product Image */}
                   <div className="relative aspect-square mb-4 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800">
                     {product.imageUrl ? (
@@ -467,8 +467,13 @@ export default function InventoryPage() {
                     )}
                   </div>
 
-                  {/* Product Details */}
-                  <div className="space-y-3">
+                  {/* Product Description - Fixed at top */}
+                  <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                    {product.description}
+                  </p>
+
+                  {/* Bottom Section - Pushed to bottom */}
+                  <div className="mt-auto space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-slate-900 dark:text-white">
                         ${product.price.toFixed(2)}
@@ -477,10 +482,6 @@ export default function InventoryPage() {
                         {stockStatus.text}
                       </Badge>
                     </div>
-
-                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                      {product.description}
-                    </p>
 
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-slate-500 dark:text-slate-400">

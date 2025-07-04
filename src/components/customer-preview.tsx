@@ -98,9 +98,6 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
-                <Store className="h-6 w-6" /> Retail Flash
-              </div>
               
               {/* Preview Badge */}
               <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 rounded-full border border-amber-200 dark:border-amber-700">
@@ -129,8 +126,7 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
                   </span>
                 )}
               </button>
-              
-              <ThemeToggle />
+
             </div>
           </div>
         </div>
@@ -215,7 +211,7 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
 
       {/* Category Cards */}
       <section className="container py-8" id="categories">
-        <h2 className="text-2xl font-bold mb-6 text-blue-700">Shop by Category</h2>
+        <h2 className="text-2xl font-bold mb-6 text-black-700">Shop by Category</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
           {demoCategories.map(cat => (
             <div key={cat.name} className="group relative rounded-2xl overflow-hidden shadow hover:shadow-lg cursor-pointer transition-all">
@@ -231,7 +227,7 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
       <section className="container py-8" id="admin-products">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-gray-900">
             <span>{products.length} products</span>
             <ExternalLink className="h-4 w-4" />
           </div>
@@ -252,7 +248,7 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
 
       {/* Product Statistics */}
       <section className="container py-8">
-        <h2 className="text-2xl font-bold mb-6 text-indigo-700">Catalog Statistics</h2>
+        <h2 className="text-2xl font-bold mb-6 text-black-700">Catalog Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-3">
