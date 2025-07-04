@@ -292,9 +292,99 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         category: "Electronics",
         stock: 90,
         imageUrl: "https://images.unsplash.com/photo-1622086949821-fa16abf67aef?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      // Additional 10 items
+      {
+        id: "sample_011",
+        name: "Smart Watch with Fitness Tracker",
+        price: 249.99,
+        description: "Advanced smartwatch with heart rate monitoring, GPS, and 7-day battery life",
+        category: "Electronics",
+        stock: 85,
+        imageUrl: "https://images.unsplash.com/photo-1544117519-31a4b719223d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_012",
+        name: "Organic Cotton Bed Sheets Set",
+        price: 79.99,
+        description: "Luxurious 100% organic cotton bed sheets, queen size, includes pillowcases",
+        category: "Home & Office",
+        stock: 45,
+        imageUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1558&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_013",
+        name: "Professional Digital Camera",
+        price: 899.99,
+        description: "24MP DSLR camera with 18-55mm lens, perfect for photography enthusiasts",
+        category: "Electronics",
+        stock: 25,
+        imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_014",
+        name: "Hiking Backpack 40L",
+        price: 119.99,
+        description: "Durable hiking backpack with multiple compartments and rain cover",
+        category: "Outdoors",
+        stock: 65,
+        imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_015",
+        name: "Wooden Cutting Board Set",
+        price: 45.99,
+        description: "Set of 3 bamboo cutting boards in different sizes with antimicrobial properties",
+        category: "Kitchen",
+        stock: 150,
+        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_016",
+        name: "Women's Running Sneakers",
+        price: 89.99,
+        description: "Lightweight running shoes with breathable mesh upper and cushioned sole",
+        category: "Fashion",
+        stock: 110,
+        imageUrl: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_017",
+        name: "Essential Oil Diffuser",
+        price: 54.99,
+        description: "Ultrasonic aromatherapy diffuser with LED lights and timer function",
+        category: "Home & Office",
+        stock: 95,
+        imageUrl: "https://images.unsplash.com/photo-1574341420281-08c5d4e8b68b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_018",
+        name: "Resistance Bands Set",
+        price: 19.99,
+        description: "Complete resistance bands set with 5 different resistance levels and door anchor",
+        category: "Fitness",
+        stock: 180,
+        imageUrl: "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_019",
+        name: "Educational STEM Robot Kit",
+        price: 149.99,
+        description: "Programmable robot kit for kids to learn coding and robotics, ages 8+",
+        category: "Toys",
+        stock: 35,
+        imageUrl: "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        id: "sample_020",
+        name: "Portable Phone Charger",
+        price: 39.99,
+        description: "10,000mAh power bank with fast charging and wireless charging pad",
+        category: "Electronics",
+        stock: 120,
+        imageUrl: "https://images.unsplash.com/photo-1609592432828-d1d5c1d04c88?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       }
     ];
-
     const blob = new Blob([JSON.stringify(sampleData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
