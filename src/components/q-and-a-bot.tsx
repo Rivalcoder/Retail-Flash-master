@@ -15,7 +15,7 @@ import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { Send, Loader2, Bot, User, Sparkles, MessageCircle, Search, HelpCircle, Star, TrendingUp, RefreshCcw, RotateCcw, Plus } from "lucide-react";
+import { Send, Loader2, Bot, User, Sparkles, MessageCircle, Search, HelpCircle, Star, TrendingUp, RefreshCcw, RotateCcw, Plus, Mic, MicOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { answerQuestion } from "@/ai/flows/customer-q-and-a-bot";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +39,9 @@ export default function QAndABot({ products }: QAndABotProps) {
   const [isPending, setIsPending] = useState(false);
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   useLayoutEffect(() => {
     if (scrollViewportRef.current) {
@@ -51,6 +54,29 @@ export default function QAndABot({ products }: QAndABotProps) {
     }
   }, [messages, isPending]);
   
+  // Check for browser speech support
+  useEffect(() => {
+    if (typeof window !== "undefined" &&
+      (window as any).webkitSpeechRecognition) {
+      setSpeechSupported(true);
+      const SpeechRecognition = (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = "en-IN"; // Default, will auto-detect
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        setIsListening(false);
+        // Optionally auto-send:
+        // handleSend();
+      };
+      recognitionRef.current.onerror = () => setIsListening(false);
+      recognitionRef.current.onend = () => setIsListening(false);
+    }
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim()) {
       toast({
@@ -75,7 +101,12 @@ export default function QAndABot({ products }: QAndABotProps) {
       const response = await answerQuestion({
         productId: selectedProductId === "general" ? "general" : selectedProductId,
         question: input,
-        products: products,
+        products: products.map(p => ({
+          ...p,
+          description: p.description || "",
+          category: p.category ?? "",
+          stock: p.stock ?? 0,
+        })),
         history: messages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
       });
       
@@ -102,6 +133,24 @@ export default function QAndABot({ products }: QAndABotProps) {
       });
     } finally {
       setIsPending(false);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (!speechSupported) {
+      toast({
+        variant: "destructive",
+        title: "Voice Not Supported",
+        description: "Your browser does not support speech recognition.",
+      });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current && recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current && recognitionRef.current.start();
+      setIsListening(true);
     }
   };
 
@@ -298,26 +347,34 @@ export default function QAndABot({ products }: QAndABotProps) {
 
             {/* Input Area */}
             <div className="border-t p-4 flex-shrink-0">
-              <div className="flex gap-3">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Ask a question about the product..."
+              <div className="flex gap-2 mt-4">
+                <Input
                   className="flex-1"
+                  placeholder="Type your question or use the mic..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !isPending) handleSend();
+                  }}
                   disabled={isPending}
-              />
-              <Button 
-                onClick={handleSend} 
-                  disabled={!input.trim() || isPending}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              >
-                  {isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                <Send className="h-4 w-4" />
-                  )}
-              </Button>
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleMicClick}
+                  className={isListening ? "bg-green-100 animate-pulse" : ""}
+                  title={isListening ? "Listening..." : "Speak your question"}
+                  disabled={isPending}
+                >
+                  {isListening ? <Mic className="text-green-600" /> : <MicOff className="text-gray-400" />}
+                </Button>
+                <Button
+                  onClick={handleSend}
+                  disabled={isPending || !input.trim()}
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  title="Send"
+                >
+                  {isPending ? <Loader2 className="animate-spin" /> : <Send />}
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -476,8 +533,6 @@ export default function QAndABot({ products }: QAndABotProps) {
           </CardContent>
         </Card>
       </div>
-
-      
     </div>
   );
 }
