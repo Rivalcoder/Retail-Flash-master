@@ -9,12 +9,12 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Dashboard from "@/components/dashboard";
 
 const demoCategories = [
-  { name: 'Electronics', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80' },
-  { name: 'Fashion', image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&q=80' },
-  { name: 'Home', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=80' },
-  { name: 'Fitness', image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80' },
-  { name: 'Toys', image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80' },
-  { name: 'Beauty', image: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&q=80' },
+  { name: 'Electronics', image: 'https://as1.ftcdn.net/v2/jpg/02/57/16/84/1000_F_257168460_AwhicdEIavp7bdCbHXyTaBTHnBoBcZad.jpg' },
+  { name: 'Fashion', image: 'https://as2.ftcdn.net/v2/jpg/01/41/72/83/1000_F_141728316_rqGLy0W6NJ4KuG0s3bRsNFO5Ot6M6Kuo.jpg' },
+  { name: 'Home', image: 'https://media.newhomeinc.com/348/2022/11/30/The-Apex-Georgian-Elevation-1.jpeg?width=1920&height=1280&fit=bounds&ois=db08613' },
+  { name: 'Fitness', image: 'https://i.etsystatic.com/29035216/r/il/7e7e20/3640388699/il_1588xN.3640388699_sg0x.jpg' },
+  { name: 'Toys', image: 'https://plus.unsplash.com/premium_photo-1684980182025-cdc9629e32db?q=80&w=747&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { name: 'Beauty', image: 'https://plus.unsplash.com/premium_photo-1677526496597-aa0f49053ce2?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
 ];
 
 interface CustomerPreviewProps {
