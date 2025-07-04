@@ -144,18 +144,18 @@ export default function InventoryPage() {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+        ((product.category ?? "").toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     // Apply category filter
     if (categoryFilter !== "all") {
-      filtered = filtered.filter(product => product.category === categoryFilter);
+      filtered = filtered.filter(product => (product.category ?? "") === categoryFilter);
     }
 
     // Apply low stock filter
     if (showLowStock) {
-      filtered = filtered.filter(product => product.stock < 50);
+      filtered = filtered.filter(product => (product.stock ?? 0) < 50);
     }
 
     // Apply sorting
@@ -172,12 +172,12 @@ export default function InventoryPage() {
           bValue = b.price;
           break;
         case "stock":
-          aValue = a.stock;
-          bValue = b.stock;
+          aValue = a.stock ?? 0;
+          bValue = b.stock ?? 0;
           break;
         case "category":
-          aValue = a.category.toLowerCase();
-          bValue = b.category.toLowerCase();
+          aValue = (a.category ?? "").toLowerCase();
+          bValue = (b.category ?? "").toLowerCase();
           break;
         default:
           aValue = a.name.toLowerCase();
@@ -342,8 +342,9 @@ export default function InventoryPage() {
   };
 
   const getCategories = () => {
-    const categories = [...new Set(products.map(p => p.category))];
-    return categories.sort();
+    return [...new Set(products.map(p => p.category ?? ""))]
+      .filter((c): c is string => typeof c === 'string' && c.length > 0)
+      .sort();
   };
 
   const getStockStatus = (stock: number) => {
@@ -502,7 +503,7 @@ export default function InventoryPage() {
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => {
-                    const stockStatus = getStockStatus(product.stock);
+                    const stockStatus = getStockStatus(product.stock ?? 0);
                     return (
                       <tr key={product._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="p-4">
