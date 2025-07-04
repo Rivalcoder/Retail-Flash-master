@@ -126,6 +126,13 @@ export default function AdminDashboardPage() {
     // Listen for custom events
     window.addEventListener('toggle-sidebar', handleSidebarToggle);
     
+    // Listen for navigation to inventory from notification bell
+    const handleNavigateToInventory = () => {
+      setActiveSection('inventory');
+    };
+
+    window.addEventListener('navigate-to-inventory', handleNavigateToInventory);
+    
     // Also listen for localStorage changes
     const handleStorageChange = () => {
       const isOpen = localStorage.getItem('sidebar-open') === 'true';
@@ -142,6 +149,7 @@ export default function AdminDashboardPage() {
 
     return () => {
       window.removeEventListener('toggle-sidebar', handleSidebarToggle);
+      window.removeEventListener('navigate-to-inventory', handleNavigateToInventory);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
@@ -479,7 +487,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         <div className="h-full p-8 overflow-y-auto">
           {activeSection === "inventory" && (
             <div className="w-full max-w-none">

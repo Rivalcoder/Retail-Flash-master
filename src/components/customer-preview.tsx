@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Store, User, ShoppingCart, Heart, Star, Eye, ExternalLink, Sparkles } from "lucide-react";
+import { Store, User, ShoppingCart, Heart, Star, Eye, ExternalLink, Sparkles, RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -22,17 +22,60 @@ interface CustomerPreviewProps {
   products: Product[];
 }
 
-export default function CustomerPreview({ products }: CustomerPreviewProps) {
+export default function CustomerPreview({ products: initialProducts }: CustomerPreviewProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
+  // Function to fetch products silently
+  const fetchProducts = async () => {
+    let productsData = [];
+    try {
+      const pathwayRes = await fetch('https://rivalcoder-pathway.hf.space/products');
+      if (pathwayRes.ok) {
+        const data = await pathwayRes.json();
+        productsData = Array.isArray(data) ? data : data.products || [];
+      } else {
+        throw new Error('Pathway API not ok');
+      }
+    } catch (err) {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          productsData = data.products || [];
+        } else {
+          console.error('Failed to load products from local DB:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Failed to load products from both Pathway API and local DB:', error);
+      }
+    } finally {
+      setProducts(productsData);
+    }
+  };
+
+  // Initial load and periodic refresh
+  useEffect(() => {
+    fetchProducts();
+    
+    // Set up periodic refresh every 10 seconds for real-time updates
+    const interval = setInterval(() => {
+      fetchProducts();
+    }, 10000); // 10 seconds for more frequent updates
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update products when props change
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
   // Debug logging
   useEffect(() => {
-    console.log('Products with promo copy:', products.filter(p => p.promoCopy).length);
-    console.log('All products:', products.length);
-    products.forEach((product, index) => {
-      console.log(`Product ${index}:`, product.name, 'Image:', product.image);
-    });
+    console.log('Customer Preview - Products with promo copy:', products.filter(p => p.promoCopy).length);
+    console.log('Customer Preview - All products:', products.length);
   }, [products]);
 
   // Sync cart/wishlist counts from localStorage
@@ -55,9 +98,6 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-blue-700 font-bold text-lg">
-                <Store className="h-6 w-6" /> Retail Flash
-              </div>
               
               {/* Preview Badge */}
               <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 rounded-full border border-amber-200 dark:border-amber-700">
@@ -86,8 +126,7 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
                   </span>
                 )}
               </button>
-              
-              <ThemeToggle />
+
             </div>
           </div>
         </div>
@@ -172,7 +211,7 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
 
       {/* Category Cards */}
       <section className="container py-8" id="categories">
-        <h2 className="text-2xl font-bold mb-6 text-blue-700">Shop by Category</h2>
+        <h2 className="text-2xl font-bold mb-6 text-black-700">Shop by Category</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
           {demoCategories.map(cat => (
             <div key={cat.name} className="group relative rounded-2xl overflow-hidden shadow hover:shadow-lg cursor-pointer transition-all">
@@ -187,10 +226,9 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
       {/* Admin Products Showcase */}
       <section className="container py-8" id="admin-products">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-900">
-            <span>{products.length} products</span>
-            <ExternalLink className="h-4 w-4" />
+          <h2 className="text-2xl font-bold text-black-700">Admin Product Catalog</h2>
+          <div className="flex items-center gap-2 text-sm text-black-700">
+            <span>Products : {products.length}</span>
           </div>
         </div>
         
@@ -209,7 +247,7 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
 
       {/* Product Statistics */}
       <section className="container py-8">
-        <h2 className="text-2xl font-bold mb-6 text-indigo-700">Catalog Statistics</h2>
+        <h2 className="text-2xl font-bold mb-6 text-black-700">Catalog Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-3">

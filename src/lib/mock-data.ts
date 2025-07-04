@@ -111,6 +111,104 @@ export const initialProducts: Product[] = [
     promoCopy:
       "Pack your adventures with the Adventure Backpack. Durable, organized, and ready for any journey. Your perfect travel companion.",
     tagline: "Pack Your Adventures"
+  },
+  {
+    id: "prod_009",
+    name: "Wireless Earbuds Pro",
+    description:
+      "Premium wireless earbuds with active noise cancellation and 24-hour battery life. Crystal clear sound quality.",
+    price: 2999,
+    oldPrice: 3999,
+    stock: 45,
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&h=400&fit=crop",
+    category: "Electronics",
+    promoCopy:
+      "Experience premium sound with Wireless Earbuds Pro. Active noise cancellation and 24-hour battery life. Limited stock!",
+    tagline: "Premium Sound Experience"
+  },
+  {
+    id: "prod_010",
+    name: "Designer Watch",
+    description:
+      "Elegant designer watch with premium materials and precise movement. Perfect for any occasion.",
+    price: 8999,
+    oldPrice: 12999,
+    stock: 25,
+    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600&h=400&fit=crop",
+    category: "Accessories",
+    promoCopy:
+      "Elevate your style with our Designer Watch. Premium materials and precise movement. Only 25 left in stock!",
+    tagline: "Timeless Elegance"
+  },
+  {
+    id: "prod_011",
+    name: "Gaming Laptop",
+    description:
+      "High-performance gaming laptop with RTX graphics and 144Hz display. Perfect for gamers and creators.",
+    price: 89999,
+    oldPrice: 109999,
+    stock: 15,
+    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&h=400&fit=crop",
+    category: "Electronics",
+    promoCopy:
+      "Dominate the game with our Gaming Laptop. RTX graphics and 144Hz display. Only 15 units available!",
+    tagline: "Game Like a Pro"
+  },
+  {
+    id: "prod_012",
+    name: "Smartphone Ultra",
+    description:
+      "Latest smartphone with advanced camera system and all-day battery life. Revolutionary technology.",
+    price: 49999,
+    oldPrice: 59999,
+    stock: 30,
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=400&fit=crop",
+    category: "Electronics",
+    promoCopy:
+      "Capture life's moments with Smartphone Ultra. Advanced camera system and all-day battery. Limited time offer!",
+    tagline: "Capture Everything"
+  },
+  {
+    id: "prod_013",
+    name: "Premium Headphones",
+    description:
+      "Studio-quality headphones with noise cancellation and premium sound. Perfect for music lovers.",
+    price: 12999,
+    oldPrice: 15999,
+    stock: 8,
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=400&fit=crop",
+    category: "Electronics",
+    promoCopy:
+      "Experience studio-quality sound with Premium Headphones. Only 8 units remaining!",
+    tagline: "Studio Quality Sound"
+  },
+  {
+    id: "prod_014",
+    name: "Limited Edition Watch",
+    description:
+      "Exclusive limited edition watch with premium craftsmanship. Only a few pieces available worldwide.",
+    price: 29999,
+    oldPrice: 39999,
+    stock: 3,
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop",
+    category: "Accessories",
+    promoCopy:
+      "Own a piece of exclusivity with Limited Edition Watch. Only 3 pieces left worldwide!",
+    tagline: "Exclusive Luxury"
+  },
+  {
+    id: "prod_015",
+    name: "Gaming Console Pro",
+    description:
+      "Next-generation gaming console with 4K graphics and lightning-fast loading times.",
+    price: 59999,
+    oldPrice: 69999,
+    stock: 12,
+    image: "https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=600&h=400&fit=crop",
+    category: "Electronics",
+    promoCopy:
+      "Level up your gaming with Gaming Console Pro. Only 12 units in stock!",
+    tagline: "Next-Gen Gaming"
   }
 ];
 
