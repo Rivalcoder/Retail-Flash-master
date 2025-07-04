@@ -16,6 +16,7 @@ import {
   LogOut,
   Package,
   Eye,
+  ExternalLink,
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
@@ -63,30 +64,50 @@ export default function AdminDashboardPage() {
     }
   }, [isClient]);
 
-  // Load products from database on mount
+  // Load products from Pathway API first, then fallback to database on mount
   useEffect(() => {
-    const loadProducts = async () => {
+    let intervalId: NodeJS.Timeout;
+    let isMounted = true;
+    let firstLoad = true;
+
+    const loadProducts = async (showLoading = false) => {
+      if (showLoading) setIsLoadingProducts(true);
+      let productsData = [];
       try {
-        setIsLoadingProducts(true);
-        const response = await fetch('/api/products');
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data.products || []);
+        const pathwayRes = await fetch('https://rivalcoder-pathway.hf.space/products');
+        if (pathwayRes.ok) {
+          const data = await pathwayRes.json();
+          productsData = Array.isArray(data) ? data : data.products || [];
         } else {
-          console.error('Failed to load products:', response.statusText);
+          throw new Error('Pathway API not ok');
         }
-      } catch (error) {
-        console.error('Failed to load products:', error);
+      } catch (err) {
+        try {
+          const response = await fetch('/api/products');
+          if (response.ok) {
+            const data = await response.json();
+            productsData = data.products || [];
+          } else {
+            console.error('Failed to load products from local DB:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Failed to load products from both Pathway API and local DB:', error);
+        }
       } finally {
-        setIsLoadingProducts(false);
+        if (isMounted) setProducts(productsData);
+        if (isMounted && showLoading) setIsLoadingProducts(false);
       }
     };
 
-    // Only load products if admin is authenticated
     if (isClient && adminData && isAdminLoggedIn()) {
-      loadProducts();
+      loadProducts(true); // Initial load shows spinner
+      intervalId = setInterval(() => loadProducts(false), 3000); // Poll every 3 seconds, no spinner
     }
-  }, [isClient, adminData]); // Include adminData dependency
+    return () => {
+      isMounted = false;
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isClient, adminData]);
   
   // Handle authentication check on mount - with delay to allow localStorage to be ready
   useEffect(() => {
@@ -131,6 +152,36 @@ export default function AdminDashboardPage() {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  // Manual refresh handler
+  const handleManualRefresh = async () => {
+    setIsLoadingProducts(true);
+    let productsData = [];
+    try {
+      const pathwayRes = await fetch('https://rivalcoder-pathway.hf.space/products');
+      if (pathwayRes.ok) {
+        const data = await pathwayRes.json();
+        productsData = Array.isArray(data) ? data : data.products || [];
+      } else {
+        throw new Error('Pathway API not ok');
+      }
+    } catch (err) {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          productsData = data.products || [];
+        } else {
+          console.error('Failed to load products from local DB:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Failed to load products from both Pathway API and local DB:', error);
+      }
+    } finally {
+      setProducts(productsData);
+      setIsLoadingProducts(false);
+    }
+  };
 
   // Don't render anything until client-side hydration is complete
   if (!isClient) {
@@ -381,6 +432,13 @@ export default function AdminDashboardPage() {
           )}
           {activeSection === "admin" && (
           <div className="w-full max-w-none">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>{products.length} products</span>
+                <ExternalLink className="h-4 w-4" />
+              </div>
+            </div>
             <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
           </div>
           )}
