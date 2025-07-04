@@ -17,6 +17,7 @@ import {
   Package,
   Eye,
   ExternalLink,
+  Menu,
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
@@ -361,55 +362,82 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex h-full">
       {/* Sidebar Navigation */}
-      {sidebarOpen && (
-        <div className="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-6 w-64 overflow-y-auto z-40 transition-all duration-300">
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p>
-          </div>
-          
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] ${
-                    isActive 
-                      ? `bg-gradient-to-r ${item.color} text-white shadow-lg` 
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
-                  }`}
-                >
-                  <Icon className={`h-5 w-5 transition-all duration-300 ${
-                    isActive ? 'text-white' : 'group-hover:scale-110'
-                  }`} />
-                  <span className={`font-medium transition-all duration-300 ${
-                    isActive ? 'text-white' : ''
-                  }`}>
-                    {item.label}
-                  </span>
-                  {isActive && (
-                    <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Logout Button */}
-          <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
-            >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Logout</span>
-            </button>
-          </div>
+      <div
+        className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-2 flex flex-col items-center overflow-y-auto z-40 transition-all duration-300
+          ${sidebarOpen ? 'w-64 px-6' : 'w-16 px-2'}
+        `}
+      >
+        {/* Sidebar Header and Toggle */}
+        <div className={`flex items-center justify-between w-full mb-8 ${sidebarOpen ? '' : 'flex-col mb-4'}`}>
+          {sidebarOpen && (
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h2>
+              {/* <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p> */}
+            </div>
+          )}
+          <button
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label={sidebarOpen ? 'Minimize sidebar' : 'Expand sidebar'}
+          >
+            <span className="sr-only">Toggle sidebar</span>
+            <Menu className="h-5 w-5" />
+          </button>
         </div>
-      )}
+
+        {/* Navigation */}
+        <nav className="space-y-2 w-full flex-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${
+                  isActive
+                    ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                <Icon className={`h-5 w-5 transition-all duration-300 ${
+                  isActive ? 'text-white' : 'group-hover:scale-110'
+                }`} />
+                <span
+                  className={`
+                    font-medium text-[16px]
+                    transition-all duration-300 ease-in-out
+                    ${isActive ? 'text-white' : ''}
+                    ${sidebarOpen ? 'opacity-100 ml-2 max-w-[160px] pr-2' : 'opacity-0 ml-0 max-w-0 pr-0'}
+                    overflow-hidden whitespace-nowrap align-middle
+                  `}
+                  style={{
+                    transitionProperty: 'opacity, margin, max-width, padding, color',
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                  }}
+                >
+                  {item.label}
+                </span>
+                {isActive && sidebarOpen && (
+                  <div className="absolute right-3 w-2 h-2 bg-white rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Logout Button */}
+        <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 w-full ${sidebarOpen ? 'mt-8' : 'mt-4'}`}>
+          <button
+            onClick={handleLogout}
+            className={`flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300`}
+          >
+            <LogOut className="h-5 w-5" />
+            {sidebarOpen && <span className="font-medium">Logout</span>}
+          </button>
+        </div>
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden">

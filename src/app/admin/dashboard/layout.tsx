@@ -13,40 +13,12 @@ export default function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  // Initialize sidebar state from localStorage
-  useEffect(() => {
-    const savedState = localStorage.getItem('sidebar-open');
-    if (savedState !== null) {
-      setSidebarOpen(savedState === 'true');
-    }
-  }, []);
-
-  const toggleSidebar = () => {
-    const newState = !sidebarOpen;
-    setSidebarOpen(newState);
-    localStorage.setItem('sidebar-open', newState.toString());
-    
-    // Dispatch custom event for the page component
-    window.dispatchEvent(new CustomEvent('toggle-sidebar'));
-  };
-
   return (
     <div className="flex h-screen w-full flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <header className="flex-shrink-0 border-b border-white/20 bg-white/80 backdrop-blur-xl dark:bg-slate-900/80">
         <div className="flex h-16 items-center justify-between px-6">
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSidebar}
-              className="h-9 w-9 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-            
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
               <Store className="h-5 w-5 text-white" />
             </div>
