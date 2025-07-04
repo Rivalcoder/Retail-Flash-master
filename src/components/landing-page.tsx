@@ -63,9 +63,9 @@ export default function LandingPage() {
             <span className="font-bold">Retail Flash</span>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
-            <Button variant="ghost" asChild>
+            {/* <Button variant="ghost" asChild>
               <Link href="/login">Customer Login</Link>
-            </Button>
+            </Button> */}
             <ThemeToggle />
           </div>
         </div>
