@@ -369,7 +369,32 @@ export default function AdminDashboardPage() {
             </div>
           )}
           {activeSection === "promo-generator" && (
-          <PromoGenerator products={products} />
+            <PromoGenerator 
+              products={products}
+              onUpdatePromoCopy={(productId, promoCopy) => {
+                setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy } : p));
+              }}
+              onGeneratePromoCopy={async (productId, tone, focus) => {
+                // Find the product
+                const product = products.find(p => p._id === productId);
+                if (!product) return "";
+                // Call the backend API to generate promo copy
+                const response = await fetch('/api/promo/generate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: product.name,
+                    price: product.price,
+                    oldPrice: product.oldPrice || product.price,
+                    description: product.description || "",
+                    tone,
+                    focus
+                  })
+                });
+                const data = await response.json();
+                return data.promoCopy || "";
+              }}
+            />
           )}
           {activeSection === "q-and-a-bot" && (
           <QAndABot products={products} />

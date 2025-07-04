@@ -259,14 +259,7 @@ export default function PromoGenerator({
               </Select>
             </div>
 
-            <Button 
-              onClick={handleGenerateAllPromoCopy}
-              disabled={generatingIds.size > 0}
-              className="gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${generatingIds.size > 0 ? 'animate-spin' : ''}`} />
-              Generate All ({filteredProducts.length})
-            </Button>
+            
           </div>
         </div>
 
