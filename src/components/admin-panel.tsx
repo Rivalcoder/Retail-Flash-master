@@ -708,7 +708,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                   <div className="space-y-2">
                     <Label htmlFor="product-category" className="text-gray-700 dark:text-gray-300">Category</Label>
                     <Select value={currentProduct.category} onValueChange={(value) => handleManualInputChange('category', value)}>
-                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+                      <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300  dark:border-gray-700">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 shadow-lg rounded-xl">
