@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     
     console.log('API: generatePromoCopy called with:', productData);
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Generate ONE compelling promotional tagline for this product.
 

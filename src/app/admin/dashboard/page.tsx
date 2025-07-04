@@ -67,10 +67,7 @@ export default function AdminDashboardPage() {
 
   // Load products from Pathway API first, then fallback to database on mount
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
     let isMounted = true;
-    let firstLoad = true;
-
     const loadProducts = async (showLoading = false) => {
       if (showLoading) setIsLoadingProducts(true);
       let productsData = [];
@@ -101,12 +98,10 @@ export default function AdminDashboardPage() {
     };
 
     if (isClient && adminData && isAdminLoggedIn()) {
-      loadProducts(true); // Initial load shows spinner
-      intervalId = setInterval(() => loadProducts(false), 3000); // Poll every 3 seconds, no spinner
+      loadProducts(true); // Only fetch once on mount
     }
     return () => {
       isMounted = false;
-      if (intervalId) clearInterval(intervalId);
     };
   }, [isClient, adminData]);
   
@@ -246,13 +241,10 @@ export default function AdminDashboardPage() {
       try {
         const text = await file.text();
         const newProductsData = JSON.parse(text);
-
-        // Get admin authentication headers
         const authHeaders = getAdminAuthHeaders();
         if (!authHeaders['x-admin-id']) {
           throw new Error('Admin authentication required. Please log in again.');
         }
-
         // Upload to database via API
         const response = await fetch('/api/products/upload-json', {
           method: 'POST',
@@ -262,13 +254,15 @@ export default function AdminDashboardPage() {
           },
           body: JSON.stringify(newProductsData),
         });
-
         const result = await response.json();
-
         if (!response.ok) {
           throw new Error(result.error || 'Failed to upload products');
         }
-
+        // Only append products that are truly new (not already in the list)
+        setProducts(prev => [
+          ...prev,
+          ...newProductsData.filter((p: any) => !prev.some(prod => prod.id === p.id))
+        ]);
         // Process AI promo generation for new/updated products
         const productsNeedingPromo = result.results
           .filter((r: any) => r.status === 'created' || r.status === 'updated')
@@ -323,15 +317,6 @@ export default function AdminDashboardPage() {
         await Promise.all(generationPromises);
         console.log('All promo generation completed');
 
-        // Refresh products from database
-        setIsLoadingProducts(true);
-        const productsResponse = await fetch('/api/products');
-        if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          setProducts(productsData.products || []);
-        }
-        setIsLoadingProducts(false);
-
         setUpdatedIds(justUpdatedIds);
 
         toast({
@@ -349,6 +334,52 @@ export default function AdminDashboardPage() {
         });
       }
     });
+  };
+
+  // Handler to update promo copy for a product
+  const handleUpdatePromoCopy = async (productId: string, promoCopy: string) => {
+    try {
+      const authHeaders = getAdminAuthHeaders();
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({ promoCopy }),
+      });
+      if (!response.ok) throw new Error('Failed to update promo copy');
+      // Only update local state, do not re-fetch from backend
+      setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy } : p));
+    } catch (err) {
+      console.error('Error updating promo copy:', err);
+    }
+  };
+
+  // Handler to generate promo copy for a product
+  const handleGeneratePromoCopy = async (productId: string, tone: string, focus: string) => {
+    try {
+      const product = products.find(p => p._id === productId);
+      if (!product) throw new Error('Product not found');
+      const authHeaders = getAdminAuthHeaders();
+      const response = await fetch('/api/promo/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({
+          name: product.name,
+          price: product.price,
+          oldPrice: product.oldPrice || product.price,
+          description: product.description || '',
+          tone,
+          focus,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to generate promo copy');
+      const data = await response.json();
+      // Immediately update local state with new promo copy
+      setProducts(prev => prev.map(p => p._id === productId ? { ...p, promoCopy: data.promoCopy } : p));
+      return data.promoCopy;
+    } catch (err) {
+      console.error('Error generating promo copy:', err);
+      throw err;
+    }
   };
 
   const navItems = [
@@ -448,7 +479,11 @@ export default function AdminDashboardPage() {
             </div>
           )}
           {activeSection === "promo-generator" && (
-          <PromoGenerator products={products} />
+            <PromoGenerator
+              products={products}
+              onUpdatePromoCopy={handleUpdatePromoCopy}
+              onGeneratePromoCopy={handleGeneratePromoCopy}
+            />
           )}
           {activeSection === "q-and-a-bot" && (
           <QAndABot products={products} />

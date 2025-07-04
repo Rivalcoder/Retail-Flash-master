@@ -314,15 +314,6 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
       },
       {
         id: "sample_013",
-        name: "Professional Digital Camera",
-        price: 899.99,
-        description: "24MP DSLR camera with 18-55mm lens, perfect for photography enthusiasts",
-        category: "Electronics",
-        stock: 25,
-        imageUrl: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      },
-      {
-        id: "sample_014",
         name: "Hiking Backpack 40L",
         price: 119.99,
         description: "Durable hiking backpack with multiple compartments and rain cover",
@@ -331,7 +322,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
-        id: "sample_015",
+        id: "sample_014",
         name: "Women's Running Sneakers",
         price: 89.99,
         description: "Lightweight running shoes with breathable mesh upper and cushioned sole",
@@ -340,7 +331,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         imageUrl: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
-        id: "sample_016",
+        id: "sample_015",
         name: "Resistance Bands Set",
         price: 19.99,
         description: "Complete resistance bands set with 5 different resistance levels and door anchor",
@@ -349,7 +340,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         imageUrl: "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
-        id: "sample_017",
+        id: "sample_016",
         name: "Educational STEM Robot Kit",
         price: 149.99,
         description: "Programmable robot kit for kids to learn coding and robotics, ages 8+",
