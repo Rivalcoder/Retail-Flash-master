@@ -188,7 +188,7 @@ export default function CustomerPreview({ products }: CustomerPreviewProps) {
       <section className="container py-8" id="admin-products">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-gray-900">
             <span>{products.length} products</span>
             <ExternalLink className="h-4 w-4" />
           </div>
