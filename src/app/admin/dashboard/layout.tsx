@@ -1,12 +1,14 @@
 "use client"
 import Link from "next/link";
-import { Store, LogOut, Crown, Menu, X } from "lucide-react";
+import { LogOut, Crown, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Image from "next/image";
+import logo from "../../../../public/logo.png";
 
 export default function AdminDashboardLayout({
   children,
@@ -19,9 +21,16 @@ export default function AdminDashboardLayout({
         <div className="flex h-16 items-center justify-between px-6">
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-              <Store className="h-5 w-5 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gradient-to-br from-blue-700 to-purple-800 shadow-lg">
+              <Image
+                src={logo}
+                alt="logo"
+                width={70}
+                height={70}
+                className="h-13 w-13 object-contain"
+              />
             </div>
+
             <div className="flex flex-col">
               <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Retail Flash
@@ -36,14 +45,14 @@ export default function AdminDashboardLayout({
               <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
               <span className="text-sm font-medium text-amber-700 dark:text-amber-300">Admin Co-Pilot</span>
             </div>
-            
+
             <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
-            
+
             <ThemeToggle />
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
+
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-9 w-9 rounded-lg hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               asChild
             >
@@ -52,7 +61,7 @@ export default function AdminDashboardLayout({
                 <span className="sr-only">Logout</span>
               </Link>
             </Button>
-            
+
             <Avatar className="h-9 w-9 ring-2 ring-white dark:ring-slate-800 shadow-lg">
               <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="logo abstract" />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
