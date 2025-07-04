@@ -7,12 +7,46 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import NotificationBell from "@/components/notification-bell";
+import type { Product } from "@/lib/types";
 
 export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  // Load products for notification bell
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const pathwayRes = await fetch('https://rivalcoder-pathway.hf.space/products');
+        if (pathwayRes.ok) {
+          const data = await pathwayRes.json();
+          const productsData = Array.isArray(data) ? data : data.products || [];
+          setProducts(productsData);
+        } else {
+          // Fallback to local API
+          const response = await fetch('/api/products');
+          if (response.ok) {
+            const data = await response.json();
+            setProducts(data.products || []);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load products for notifications:', error);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const handleNavigateToInventory = () => {
+    // Dispatch a custom event that the dashboard page can listen to
+    window.dispatchEvent(new CustomEvent('navigate-to-inventory'));
+  };
+
   return (
     <div className="flex h-screen w-full flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <header className="flex-shrink-0 border-b border-white/20 bg-white/80 backdrop-blur-xl dark:bg-slate-900/80">
@@ -38,6 +72,8 @@ export default function AdminDashboardLayout({
             </div>
             
             <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
+            
+            <NotificationBell products={products} onNavigateToInventory={handleNavigateToInventory} />
             
             <ThemeToggle />
             

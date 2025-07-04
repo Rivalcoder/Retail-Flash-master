@@ -13,6 +13,7 @@ import WishlistDrawer from '@/components/WishlistDrawer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { useRouter } from "next/navigation";
+import ScrollableOfferCards from "@/components/scrollable-offer-cards";
 
 const demoCategories = [
   { name: 'Electronics', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80' },
@@ -151,6 +152,9 @@ export default function CustomerDashboardPage() {
         </Swiper>
       </section>
 
+      {/* Scrollable Offer Cards */}
+      <ScrollableOfferCards products={products} />
+
       {/* Category Cards */}
       <section className="container py-8" id="categories">
         <h2 className="text-2xl font-bold mb-6 text-blue-700">Shop by Category</h2>
@@ -165,13 +169,22 @@ export default function CustomerDashboardPage() {
         </div>
       </section>
 
-      {/* Offers/Deals Section */}
+      {/* Featured Products Section */}
       <section className="container py-8" id="offers">
-        <h2 className="text-2xl font-bold mb-6 text-pink-700">Top Deals & Flash Sales</h2>
+        <h2 className="text-2xl font-bold mb-6 text-purple-700">Featured Products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.slice(0, 4).map((product, i) => (
             <div key={product.id || i} className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all border border-gray-100 dark:border-gray-800 flex flex-col">
-              <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow z-10">{Math.round(Math.random()*50+10)}% OFF</span>
+              {product.oldPrice && (
+                <span className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow z-10">
+                  {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
+                </span>
+              )}
+              {product.isNew && (
+                <span className="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow z-10">
+                  NEW
+                </span>
+              )}
               <img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-t-2xl" />
               <div className="flex-1 flex flex-col p-5 gap-2">
                 <div className="flex items-center justify-between">

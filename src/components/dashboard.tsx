@@ -39,7 +39,7 @@ interface DashboardProps {
 
 interface Notification {
   id: string;
-  type: 'stock-update' | 'price-drop' | 'new-product' | 'hot-deal' | 'flash-sale';
+  type: 'price-drop' | 'new-product' | 'hot-deal' | 'flash-sale';
   productId: string;
   message: string;
   icon: any;
@@ -57,9 +57,20 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
 
   const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
 
+  // Sort products alphabetically by name
+  const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+  
   const filteredProducts = selectedCategory === "All" 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+    ? sortedProducts 
+    : sortedProducts.filter(p => p.category === selectedCategory);
+
+  // Debug logging for product sorting and display
+  useEffect(() => {
+    console.log('Dashboard - Total products:', products.length);
+    console.log('Dashboard - Sorted products:', sortedProducts.map(p => p.name));
+    console.log('Dashboard - Filtered products:', filteredProducts.map(p => p.name));
+    console.log('Dashboard - Selected category:', selectedCategory);
+  }, [products, sortedProducts, filteredProducts, selectedCategory]);
 
   // Generate notifications based on product updates
   useEffect(() => {
@@ -95,19 +106,7 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
         });
       }
 
-      // Low stock notifications
-      if (product.stock <= 10 && product.stock > 0) {
-        newNotifications.push({
-          id: `stock-${product._id}`,
-          type: 'stock-update',
-          productId: product._id,
-          message: `Only ${product.stock} left - ${product.name}`,
-          icon: AlertTriangle,
-          color: 'text-orange-600',
-          bgColor: 'bg-orange-100 dark:bg-orange-900/20',
-          timestamp: new Date()
-        });
-      }
+
 
       // Hot deals for products with high stock and good prices
       if (product.stock > 50 && product.price < 2000) {
