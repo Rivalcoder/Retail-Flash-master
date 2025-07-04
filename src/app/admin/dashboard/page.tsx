@@ -394,30 +394,43 @@ export default function AdminDashboardPage() {
     <div className="flex h-full">
       {/* Sidebar Navigation */}
       <div
-        className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-2 flex flex-col items-center overflow-y-auto z-40 transition-all duration-300
-          ${sidebarOpen ? 'w-64 px-6' : 'w-16 px-2'}
+        className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-1 flex flex-col items-center overflow-y-auto z-40 transition-all duration-300
+          ${sidebarOpen ? 'w-64 px-3' : 'w-16 px-2'}
         `}
       >
         {/* Sidebar Header and Toggle */}
-        <div className={`flex items-center justify-between w-full mb-8 ${sidebarOpen ? '' : 'flex-col mb-4'}`}>
-          {sidebarOpen && (
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h2>
+        <div className={`flex items-center w-full ${sidebarOpen ? 'mb-8' : 'mb-2'} ${sidebarOpen ? '' : 'justify-center'}`} style={{ minHeight: 48 }}>
+          <div className={`flex items-center w-full ${sidebarOpen ? '' : 'justify-center'}`} style={{ minHeight: 48 }}>
+            <button
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              className={`rounded-full ${!sidebarOpen ? 'ml-3' : ''} p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center ${sidebarOpen ? '' : 'mx-auto'}`}
+              aria-label={sidebarOpen ? 'Minimize sidebar' : 'Expand sidebar'}
+              style={{ height: 40, width: 40 }}
+            >
+              <span className="sr-only">Toggle sidebar</span>
+              <Menu className="h-5 w-5 " />
+            </button>
+            <div
+              className={`
+                ml-3
+                transition-all duration-300 ease-in-out
+                ${sidebarOpen ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'}
+                overflow-hidden whitespace-nowrap
+              `}
+              style={{
+                transitionProperty: 'opacity, max-width, color',
+                display: 'inline-block',
+                verticalAlign: 'middle',
+              }}
+            >
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-0">Admin Panel</h2>
               {/* <p className="text-sm text-slate-600 dark:text-slate-400">Manage your retail operations</p> */}
             </div>
-          )}
-          <button
-            onClick={() => setSidebarOpen((prev) => !prev)}
-            className="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label={sidebarOpen ? 'Minimize sidebar' : 'Expand sidebar'}
-          >
-            <span className="sr-only">Toggle sidebar</span>
-            <Menu className="h-5 w-5" />
-          </button>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="space-y-2 w-full flex-1">
+        <nav className="space-y-2 w-full flex-1 flex flex-col items-center">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -425,7 +438,7 @@ export default function AdminDashboardPage() {
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
-                className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${
+                className={`group relative flex items-center ${sidebarOpen ? 'gap-3 px-4 py-3 justify-start' : 'justify-center p-3'} w-full rounded-xl transition-all duration-300 hover:scale-[1.02] ${
                   isActive
                     ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
                     : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
@@ -436,7 +449,7 @@ export default function AdminDashboardPage() {
                 }`} />
                 <span
                   className={`
-                    font-medium text-[16px]
+                    font-medium text-[16px] !text-[16px]
                     transition-all duration-300 ease-in-out
                     ${isActive ? 'text-white' : ''}
                     ${sidebarOpen ? 'opacity-100 ml-2 max-w-[160px] pr-2' : 'opacity-0 ml-0 max-w-0 pr-0'}
