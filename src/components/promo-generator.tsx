@@ -220,18 +220,6 @@ export default function PromoGenerator({
               </SelectContent>
             </Select>
           </div>
-
-          {/* Generation Controls */}
-          <div className="flex flex-wrap gap-4">
-            <Button 
-              onClick={handleGenerateAllPromoCopy}
-              disabled={generatingIds.size > 0}
-              className="gap-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              Generate All
-            </Button>
-          </div>
         </div>
 
         {/* Table */}
