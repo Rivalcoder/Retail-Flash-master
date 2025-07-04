@@ -84,7 +84,7 @@ export async function generatePromoCopy(productData: any) {
 
   // Fallback to Gemini if local model fails
   console.log('Local model failed, falling back to Gemini...');
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
   const prompt = `Generate ONE compelling promotional tagline for this product.
 
@@ -157,7 +157,7 @@ export async function generatePromoCopyVariations(
 
     console.log('Attempting to generate promotional copy variations...');
     const { object } = await generateObject({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: z.object({
         variations: z.array(z.string()).describe('Array of promotional copy variations')
