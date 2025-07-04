@@ -2,19 +2,32 @@
 
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, Bot, Sparkles, Search, HelpCircle, TrendingUp, Plus, Mic, MicOff, X, CheckCircle } from "lucide-react";
+import { Send, Loader2, Bot, Sparkles, Search, HelpCircle, TrendingUp, Plus, Mic, MicOff, X, CheckCircle, AlertCircle } from "lucide-react";
 
-// Mock Product type for demo
+// Import the real AI flow function
+import { answerQuestion } from '@/ai/flows/customer-q-and-a-bot';
+
+// Product type matching the database schema
 interface Product {
   _id: string;
   name: string;
   price: number;
-  image?: string;
-  imageUrl?: string;
-  stock: number;
-  isNew?: boolean;
-  category?: string;
+  oldPrice?: number;
   description?: string;
+  category: string;
+  stock: number;
+  imageUrl: string;
+  promoCopy?: string;
+  isNew?: boolean;
+  isActive: boolean;
+  tags?: string[];
+  specifications?: Record<string, any>;
+  ratings?: {
+    average: number;
+    count: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface Message {
@@ -24,67 +37,8 @@ interface Message {
   productId?: string;
 }
 
-// Mock products for demo
-const mockProducts: Product[] = [
-  {
-    _id: "1",
-    name: "Premium Wireless Headphones",
-    price: 15999,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
-    stock: 25,
-    isNew: true,
-    category: "Electronics",
-    description: "High-quality wireless headphones with noise cancellation"
-  },
-  {
-    _id: "2",
-    name: "Smart Fitness Watch",
-    price: 12999,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
-    stock: 18,
-    category: "Wearables",
-    description: "Advanced fitness tracking with heart rate monitoring"
-  },
-  {
-    _id: "3",
-    name: "Mechanical Gaming Keyboard",
-    price: 8999,
-    image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=300&h=300&fit=crop",
-    stock: 32,
-    category: "Gaming",
-    description: "RGB mechanical keyboard with premium switches"
-  },
-  {
-    _id: "4",
-    name: "Portable Bluetooth Speaker",
-    price: 4999,
-    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop",
-    stock: 45,
-    isNew: true,
-    category: "Audio",
-    description: "Waterproof portable speaker with 360° sound"
-  }
-];
-
-// Mock AI response function
-const mockAnswerQuestion = async (params: any) => {
-  await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
-  
-  const responses = [
-    "This product features advanced technology with premium build quality. It's designed for users who value performance and reliability.",
-    "Compared to similar products, this offers excellent value for money with superior features and build quality.",
-    "The warranty includes 2 years of comprehensive coverage with free repairs and replacements for manufacturing defects.",
-    "This product comes with all essential accessories including charging cable, user manual, and premium carrying case.",
-    "Standard shipping takes 3-5 business days, with express delivery available in 1-2 days for major cities.",
-    "Our return policy allows 30 days for returns with full refund, and 90 days for exchanges on unused items.",
-    "We currently have seasonal discounts of up to 20% off, plus additional savings for bulk purchases."
-  ];
-  
-  return { answer: responses[Math.floor(Math.random() * responses.length)] };
-};
-
 export default function QAndABot() {
-  const [products] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>("general");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -92,8 +46,39 @@ export default function QAndABot() {
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState<string | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        setProductsError(null);
+        
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        const data = await response.json();
+        if (data.success && data.products) {
+          setProducts(data.products);
+        } else {
+          throw new Error('No products available');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setProductsError(error instanceof Error ? error.message : 'Failed to load products');
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const toast = (message: { title: string; description: string; variant?: "destructive" }) => {
     setShowNotification(true);
@@ -140,6 +125,15 @@ export default function QAndABot() {
       return;
     }
 
+    if (products.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No Products Available",
+        description: "Please add some products to the inventory first.",
+      });
+      return;
+    }
+
     const userMessage: Message = {
       sender: "user",
       text: input,
@@ -152,11 +146,23 @@ export default function QAndABot() {
     setIsPending(true);
 
     try {
-      const response = await mockAnswerQuestion({
+      const response = await answerQuestion({
         productId: selectedProductId,
         question: input,
-        products: products,
-        history: messages.slice(-6),
+        products: products.map(p => ({
+          _id: p._id,
+          name: p.name,
+          description: p.description || "",
+          price: p.price,
+          category: p.category,
+          stock: p.stock,
+          image: p.imageUrl,
+          imageUrl: p.imageUrl,
+          isNew: p.isNew,
+          features: p.tags || [],
+          specifications: p.specifications || {}
+        })),
+        history: messages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
       });
 
       const botMessage: Message = {
@@ -206,10 +212,81 @@ export default function QAndABot() {
     "What is the product description?",
     "What is the product ID?",
     "What is the product price?",
-    "Does this product have an image?"
+    "Does this product have an image?",
+    "What are the product features?",
+    "What are the product specifications?"
   ];
 
   const popularProducts = products.slice(0, 4);
+
+  // Show loading state
+  if (isLoadingProducts) {
+    return (
+      <div className="max-h-[90vh] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto p-6 h-screen max-h-[90vh] flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+              Loading Products...
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              Fetching inventory data for the AI assistant
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (productsError) {
+    return (
+      <div className="max-h-[90vh] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto p-6 h-screen max-h-[90vh] flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+              Unable to Load Products
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              {productsError}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (products.length === 0) {
+    return (
+      <div className="max-h-[90vh] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto p-6 h-screen max-h-[90vh] flex items-center justify-center">
+          <div className="text-center">
+            <Search className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+              No Products Available
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              Please add some products to the inventory to use the AI assistant
+            </p>
+            <button
+              onClick={() => window.location.href = '/admin/dashboard/inventory'}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Go to Inventory
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className=" max-h-[90vh] bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -354,8 +431,70 @@ export default function QAndABot() {
                                 : "bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
                             }`}
                           >
-                            <div className="text-sm leading-relaxed">
-                              {message.text}
+                            <div className="whitespace-pre-wrap text-sm prose prose-sm max-w-none dark:prose-invert">
+                              {message.sender === "bot" ? (
+                                <div dangerouslySetInnerHTML={{ 
+                                  __html: (() => {
+                                    let text = message.text;
+                                    
+                                    // Handle headers
+                                    text = text.replace(/### (.*)/g, '<h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">$1</h3>');
+                                    text = text.replace(/## (.*)/g, '<h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">$1</h2>');
+                                    
+                                    // Handle bold and italic
+                                    text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+                                    text = text.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+                                    
+                                    // Handle code
+                                    text = text.replace(/`(.*?)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
+                                    
+                                    // Handle blockquotes
+                                    text = text.replace(/> (.*)/g, '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 my-2">$1</blockquote>');
+                                    
+                                    // Handle tables - find table blocks and convert them
+                                    text = text.replace(/(\|.*\|[\s\S]*?)(?=\n\n|\n[^|]|$)/g, (match) => {
+                                      const lines = match.trim().split('\n').filter(line => line.trim());
+                                      if (lines.length < 2) return match;
+                                      
+                                      let tableHtml = '<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600">';
+                                      
+                                      lines.forEach((line, index) => {
+                                        const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+                                        if (cells.length === 0) return;
+                                        
+                                        if (index === 0) {
+                                          // Header row
+                                          tableHtml += '<thead><tr>';
+                                          cells.forEach(cell => {
+                                            tableHtml += `<th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-semibold bg-gray-100 dark:bg-gray-800 text-left">${cell}</th>`;
+                                          });
+                                          tableHtml += '</tr></thead><tbody>';
+                                        } else if (line.includes('---')) {
+                                          // Skip separator row
+                                          return;
+                                        } else {
+                                          // Data row
+                                          tableHtml += '<tr>';
+                                          cells.forEach(cell => {
+                                            tableHtml += `<td class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm">${cell}</td>`;
+                                          });
+                                          tableHtml += '</tr>';
+                                        }
+                                      });
+                                      
+                                      tableHtml += '</tbody></table></div>';
+                                      return tableHtml;
+                                    });
+                                    
+                                    // Handle line breaks
+                                    text = text.replace(/\n/g, '<br>');
+                                    
+                                    return text;
+                                  })()
+                                }} />
+                              ) : (
+                                message.text
+                              )}
                             </div>
                             <div className={`text-xs mt-2 ${
                               message.sender === "user" 
@@ -525,7 +664,7 @@ export default function QAndABot() {
                         className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white dark:border-slate-700 shadow-lg"
                       >
                         <img
-                          src={selectedProduct.image || selectedProduct.imageUrl}
+                          src={selectedProduct.imageUrl}
                           alt={selectedProduct.name}
                           className="w-full h-full object-cover"
                         />
@@ -618,7 +757,7 @@ export default function QAndABot() {
                       className="w-12 h-12 rounded-xl overflow-hidden border-2 border-white dark:border-slate-600 shadow-md"
                     >
                       <img
-                        src={product.image || product.imageUrl}
+                        src={product.imageUrl}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
