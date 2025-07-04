@@ -210,7 +210,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "High-quality wireless headphones with noise cancellation",
         category: "Electronics",
         stock: 50,
-        imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1657223143970-08cc5afe9943?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_002",
@@ -219,7 +219,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Adjustable LED desk lamp with smart touch controls and USB charging port",
         category: "Home & Office",
         stock: 120,
-        imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1711917336373-3c3ccc49be65?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_003",
@@ -228,7 +228,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Genuine leather wallet with RFID blocking technology",
         category: "Fashion",
         stock: 200,
-        imageUrl: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1629958513881-a086d21383cd?q=80&w=1473&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_004",
@@ -237,7 +237,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Keeps drinks cold for 24 hours and hot for 12 hours, 500ml capacity",
         category: "Outdoors",
         stock: 80,
-        imageUrl: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1544003484-3cd181d17917?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_005",
@@ -246,7 +246,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Compact wireless speaker with deep bass and 12-hour playtime",
         category: "Electronics",
         stock: 75,
-        imageUrl: "https://images.unsplash.com/photo-1512499617640-c2f999098c01?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1643385958950-8f0b8852171a?q=80&w=2054&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_006",
@@ -255,7 +255,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Creative 150-piece building blocks set for kids aged 3+",
         category: "Toys",
         stock: 60,
-        imageUrl: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1543878636-41918458581d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_007",
@@ -264,7 +264,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Adjustable office chair with lumbar support and breathable mesh back.",
         category: "Home & Office",
         stock: 40,
-        imageUrl: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1641794008048-d863bb4a23d3?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_008",
@@ -273,7 +273,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "10-piece premium stainless steel cookware set for all cooktops.",
         category: "Kitchen",
         stock: 55,
-        imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://plus.unsplash.com/premium_photo-1664391825760-17aacf4cb3b4?q=80&w=775&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_009",
@@ -282,7 +282,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "Non-slip yoga mat with extra cushioning and carrying strap included.",
         category: "Fitness",
         stock: 100,
-        imageUrl: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1591291621164-2c6367723315?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       },
       {
         id: "sample_010",
@@ -291,7 +291,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
         description: "High-precision wireless gaming mouse with customizable buttons.",
         category: "Electronics",
         stock: 90,
-        imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1622086949821-fa16abf67aef?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       }
     ];
 
@@ -707,7 +707,7 @@ export default function AdminPanel({ onUpdate, isPending }: AdminPanelProps) {
                     {/* Upload Progress */}
                     {isUploading && (
                       <div className="space-y-2 mt-4">
-                        <Progress value={uploadProgress} className="h-2 bg-gray-200 dark:bg-gray-700" indicatorColor="bg-green-500" />
+                        <Progress value={uploadProgress} className="h-2 bg-gray-200 dark:bg-gray-700" />
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           Uploading... {uploadProgress}%
                         </p>
