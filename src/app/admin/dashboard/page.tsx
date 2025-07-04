@@ -5,14 +5,12 @@ import AdminPanel from "@/components/admin-panel";
 import PromoGenerator from "@/components/promo-generator";
 import QAndABot from "@/components/q-and-a-bot";
 import CustomerPreview from "@/components/customer-preview";
-import { initialProducts } from "@/lib/mock-data";
 import type { Product } from "@/lib/types";
 import { getAdminData, isAdminLoggedIn, logoutAdmin, getAdminAuthHeaders } from "@/lib/auth-utils";
 import {
   Bot,
   Sparkles,
   Shield,
-  User,
   LogOut,
   Package,
   Eye,
@@ -21,7 +19,6 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import InventoryPage from "@/components/inventory-page";
 
@@ -354,7 +351,7 @@ export default function AdminDashboardPage() {
   };
 
   // Handler to generate promo copy for a product
-  const handleGeneratePromoCopy = async (productId: string, tone: string, focus: string) => {
+  const handleGeneratePromoCopy = async (productId: string) => {
     try {
       const product = products.find(p => p._id === productId);
       if (!product) throw new Error('Product not found');
@@ -367,8 +364,6 @@ export default function AdminDashboardPage() {
           price: product.price,
           oldPrice: product.oldPrice || product.price,
           description: product.description || '',
-          tone,
-          focus,
         }),
       });
       if (!response.ok) throw new Error('Failed to generate promo copy');
@@ -449,7 +444,7 @@ export default function AdminDashboardPage() {
                 }`} />
                 <span
                   className={`
-                    font-medium text-[16px] !text-[16px]
+                    font-medium text-[16px]
                     transition-all duration-300 ease-in-out
                     ${isActive ? 'text-white' : ''}
                     ${sidebarOpen ? 'opacity-100 ml-2 max-w-[160px] pr-2' : 'opacity-0 ml-0 max-w-0 pr-0'}
