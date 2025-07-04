@@ -509,10 +509,9 @@ export default function AdminDashboardPage() {
             {activeSection === "admin" && (
               <div className="w-full max-w-none">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-green-700">Admin Product Catalog</h2>
-                  <div className="flex items-center gap-2 text-sm text-gray-100">
-                    <span>{products.length} products</span>
-                    <ExternalLink className="h-4 w-4" />
+                  <h2 className="text-2xl font-bold text-black-700">Admin Product Catalog</h2>
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <span>Products : {products.length}</span>
                   </div>
                 </div>
                 <AdminPanel onUpdate={handleCatalogUpdate} isPending={isPending} />
