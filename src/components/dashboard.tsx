@@ -385,8 +385,8 @@ export default function Dashboard({ products, updatedIds }: DashboardProps) {
 
               {/* Bottom Content - Pushed to bottom */}
               <div className="mt-auto space-y-2">
-                <div className="flex items-end gap-2">
-                  <span className="text-xl font-bold text-blue-700">₹{product.price.toLocaleString()}</span>
+                <div className="flex items-end gap-2 mt-5">
+                  <span className="text-l text-black-700">₹{product.price.toLocaleString()}</span>
                   {product.oldPrice && (
                     <span className="text-sm text-gray-400 line-through">₹{product.oldPrice.toLocaleString()}</span>
                   )}
