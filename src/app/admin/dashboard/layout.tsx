@@ -66,7 +66,7 @@ export default function AdminDashboardLayout({
             </div>
 
             <div className="flex flex-col">
-              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Retail Flash
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</span>

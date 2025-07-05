@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Store } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
+import Image from "next/image";
+import logo from "../../public/logo.png";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -28,31 +30,30 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <header className="fixed top-0 z-50 w-full">
         <motion.div
-          className="container flex h-16 items-center"
+          className="container flex h-16 items-center justify-between"
           initial="hidden"
           animate="show"
           variants={FADE_DOWN_ANIMATION_VARIANTS}
         >
-          <Link href="/" className="flex items-center gap-2">
-            <Store className="h-6 w-6 text-primary" />
-            <span className="font-bold">Retail Flash</span>
-          </Link>
-          <div className="flex flex-1 items-center justify-end space-x-4">
-            {pathname.includes('/admin') ? (
-              <Link
-                href="/login"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                Customer Login
-              </Link>
-            ) : (
-              <Link
-                href="/admin/login"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                Admin Login
-              </Link>
-            )}
+          <span className="font-bold text-2xl">Retail Flash</span>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/admin/login"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Admin Login
+            </Link>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gradient-to-br from-blue-700 to-purple-800 shadow-lg">
+                <Image
+                  src={logo}
+                  alt="logo"
+                  width={70}
+                  height={70}
+                  className="h-13 w-13 object-contain"
+                />
+              </div>
+            </Link>
             <ThemeToggle />
           </div>
         </motion.div>

@@ -8,6 +8,8 @@ import { ThemeToggle } from "./theme-toggle"
 import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa"
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision"
 import { HoverEffect } from "@/components/ui/card-hover-effect"
+import Image from "next/image";
+import logo from "../../public/logo.png";
 
 const features = [
   {
@@ -58,9 +60,17 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
-          <div className="mr-4 flex items-center">
-            <Store className="h-6 w-6 mr-2 text-primary" />
-            <span className="font-bold">Retail Flash</span>
+          <div className="mr-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gradient-to-br from-blue-700 to-purple-800 shadow-lg gap-2">
+                <Image
+                  src={logo}
+                  alt="logo"
+                  width={70}
+                  height={70}
+                  className="h-13 w-13 object-contain"
+                />
+            </div>
+            <span className="font-bold text-2xl">Retail Flash</span>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
             {/* <Button variant="ghost" asChild>
@@ -91,7 +101,7 @@ export default function LandingPage() {
               >
                 <motion.div
                   variants={FADE_UP_ANIMATION_VARIANTS}
-                  className="rounded-full border px-4 py-1.5 text-sm text-muted-foreground bg-white/60 dark:bg-black/30 backdrop-blur-md shadow-md"
+                  className="rounded-full border px-4 py-1.5 text-sm text-muted-foreground bg-white/60 dark:bg-black/30 backdrop-blur-md"
                 >
                   <span>Now powered by Pathway</span>
                 </motion.div>
