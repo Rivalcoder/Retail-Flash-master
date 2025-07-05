@@ -62,7 +62,7 @@ export default function CustomerPreview({ products: initialProducts }: CustomerP
     // Set up periodic refresh every 10 seconds for real-time updates
     const interval = setInterval(() => {
       fetchProducts();
-    }, 10000); // 10 seconds for more frequent updates
+    },3000); // 10 seconds for more frequent updates
 
     return () => clearInterval(interval);
   }, []);
