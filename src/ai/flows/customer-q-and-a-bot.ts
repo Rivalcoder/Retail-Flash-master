@@ -166,17 +166,10 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
       specifications: product.specifications || {}
     }));
 
-    // First, try local model
-    console.log('Attempting to call local model...');
-    const localResponse = await callLocalModel(validatedInput.question, productsData, specificProduct);
-    
-    if (localResponse) {
-      console.log('Successfully generated response from local model');
-      return { answer: localResponse };
-    }
-
-    console.log('Local model failed, falling back to Gemini...');
-    const { object } = await generateObject({
+    // FIRST PRIORITY: Try Gemini
+    console.log('🔄 FIRST PRIORITY: Attempting to call Gemini...');
+    try {
+      const { object } = await generateObject({
       model: google('gemini-2.0-flash-exp'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: AnswerQuestionOutputSchema,
@@ -278,11 +271,29 @@ export async function answerQuestion(input: AnswerQuestionInput): Promise<Answer
                Please provide a helpful and detailed answer using the actual product data from the catalog above. If the user is asking about a specific product, use the exact data for that product. If asking for comparisons, use real data from multiple products.`
     });
 
-    console.log('Successfully generated AI response from Gemini');
-    return object;
+      console.log('✅ Successfully generated response from Gemini (FIRST PRIORITY)');
+      return object;
+    } catch (geminiError) {
+      console.log('❌ Gemini failed, falling back to local model...');
+      
+      // SECOND PRIORITY: Try local model
+      console.log('🔄 SECOND PRIORITY: Attempting to call local model...');
+      const localResponse = await callLocalModel(validatedInput.question, productsData, specificProduct);
+      
+      if (localResponse) {
+        console.log('✅ Successfully generated response from local model (SECOND PRIORITY)');
+        return { answer: localResponse };
+      }
+      
+      // If both fail, return error
+      console.error('❌ Both Gemini and local model failed');
+      return {
+        answer: "❌ Technical Difficulty: I'm sorry, I'm experiencing technical difficulties right now. Please try again later or contact our customer support team for assistance."
+      };
+    }
 
   } catch (error) {
-    console.error('Error calling AI API:', error);
+    console.error('Error in answerQuestion:', error);
     
     // Return a fallback response in case of API error
     return {

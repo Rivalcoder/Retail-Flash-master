@@ -234,8 +234,8 @@ export default function PromoGenerator({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product) => (
-                <TableRow key={product._id}>
+              {filteredProducts.map((product, index) => (
+                <TableRow key={`${product._id}-${index}`}>
                   <TableCell className="font-medium">
                     <div>
                       <div className="font-medium">{product.name}</div>

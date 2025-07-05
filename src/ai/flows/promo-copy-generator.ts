@@ -157,7 +157,7 @@ export async function generatePromoCopyVariations(
 
     console.log('Attempting to generate promotional copy variations...');
     const { object } = await generateObject({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-2.0-flash'),
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       schema: z.object({
         variations: z.array(z.string()).describe('Array of promotional copy variations')

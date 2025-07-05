@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     
     console.log('API: generatePromoCopy called with:', productData);
     
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `Generate ONE compelling promotional tagline for this product.
 
@@ -18,13 +18,17 @@ Price: $${productData.price}
 Original Price: ${productData.oldPrice ? `$${productData.oldPrice}` : 'N/A'}
 Description: ${productData.description}
 
-Create a single catchy tagline (max 12 words) that:
+Create a single catchy tagline (max 8-12 words) that:
 - Highlights value or savings
 - Uses action words
 - Is memorable and impactful
 - Emphasizes benefits or urgency
+- Can include 1-2 emojis for visual appeal
 
-Example: "Smart lighting that saves you 40% - Transform your home today!"
+Examples:
+- "🔥 Smart lighting that saves you 40% - Transform your home today!"
+- "⚡ Premium quality at unbeatable prices - Upgrade now!"
+- "🎯 Professional results guaranteed - Try it today!"
 
 Tagline:`;
 
